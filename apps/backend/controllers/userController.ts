@@ -1,19 +1,22 @@
 import { Request, Response } from "express";
 import User from "../models/User";
 
-export const signupUser = async (req: Request, res: Response) => {
+export const signupUser = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { username, email, password } = req.body;
 
-    // Basic check for required fields
     if (!username || !email || !password) {
-      return res.status(400).json({ error: "All fields are required" });
+      res.status(400).json({ error: "All fields are required" });
+      return;
     }
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(409).json({ error: "Email already in use" });
+      res.status(409).json({ error: "Email already in use" });
+      return;
     }
 
     const newUser = new User({ username, email, password });
