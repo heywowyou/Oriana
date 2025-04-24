@@ -17,7 +17,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${roboto.variable} font-sans bg-powder`}>
         <Header />
-        {children}
+        <div className="flex justify-center mt-6">
+          <aside className="w-1/6 hidden lg:block" />
+
+          <main className="w-4/6 max-w-[1200px]">{children}</main>
+
+          <aside className="w-1/6 hidden lg:block" />
+        </div>
       </body>
     </html>
   );
