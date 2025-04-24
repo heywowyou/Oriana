@@ -7,6 +7,9 @@ module.exports = {
         powder: "#0E0F11",
         ashe: "#181A1C",
       },
+      fontFamily: {
+        sans: ["var(--font-roboto)", "sans-serif"],
+      },
     },
   },
   plugins: [],

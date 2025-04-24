@@ -1,5 +1,12 @@
+import { Roboto } from "next/font/google";
 import "./globals.css";
 import Header from "../../components/Header";
+
+const roboto = Roboto({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-roboto",
+});
 
 export default function RootLayout({
   children,
@@ -8,7 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-powder">
+      <body className={`${roboto.variable} font-sans bg-powder`}>
         <Header />
         {children}
       </body>
