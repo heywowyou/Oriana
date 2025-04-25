@@ -77,8 +77,8 @@ export default function WatchedContainer() {
       )}
 
       {/* Main content */}
-      <div className="bg-ashe min-h-screen p-6">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+      <div className="bg-ashe rounded-lg min-h-screen mt-10 p-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
           {elements.map((element: any) => (
             <WatchedElement key={element._id} {...element} />
           ))}
