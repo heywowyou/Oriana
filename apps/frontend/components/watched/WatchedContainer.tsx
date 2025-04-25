@@ -1,12 +1,10 @@
-// apps/frontend/components/watched/WatchedContainer.tsx
-
 "use client";
 
 import { useEffect, useState } from "react";
 import LogWatchedForm from "./LogWatchedForm";
 import WatchedElement from "./WatchedElement";
 
-const userId = "60807a5abce72c511dab5559"; // for now
+const userId = "60807a5abce72c511dab5559";
 
 export default function WatchedContainer() {
   const [elements, setElements] = useState([]);
@@ -22,12 +20,10 @@ export default function WatchedContainer() {
   }, []);
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-6">Your Watched Media</h1>
-
+    <div className="bg-ashe rounded-xl min-h-screen mt-6 p-10">
       <LogWatchedForm userId={userId} onNew={fetchWatched} />
 
-      <div className="grid gap-4 mt-6">
+      <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
         {elements.map((element: any) => (
           <WatchedElement key={element._id} {...element} />
         ))}
