@@ -7,8 +7,7 @@ const watchedElementSchema = new Schema(
     title: { type: String, required: true },
     cover: { type: String },
     dateWatched: { type: Date, default: Date.now },
-    note: { type: String },
-    rating: { type: Number, min: 0, max: 10 },
+    rating: { type: Number, min: 0, max: 5 },
   },
   {
     timestamps: true,
