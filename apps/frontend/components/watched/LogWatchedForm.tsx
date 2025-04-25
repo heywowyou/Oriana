@@ -13,19 +13,28 @@ export default function LogWatchedForm({ userId, onNew }: Props) {
   const [cover, setCover] = useState("");
   const [type, setType] = useState<"movie" | "show" | "anime">("movie");
   const [rating, setRating] = useState(0);
+  const [dateWatched, setDateWatched] = useState(""); // New state
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await fetch("http://localhost:5000/api/watched", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user: userId, title, cover, type, rating }),
+      body: JSON.stringify({
+        user: userId,
+        title,
+        cover,
+        type,
+        rating,
+        dateWatched,
+      }),
     });
 
     setTitle("");
     setCover("");
     setType("movie");
     setRating(0);
+    setDateWatched("");
     onNew();
   };
 
@@ -38,7 +47,7 @@ export default function LogWatchedForm({ userId, onNew }: Props) {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
-          className="w-full bg-ashe rounded px-3 py-2 focus:outline-none"
+          className="w-full bg-ashe text-gray-400 rounded px-3 py-2 focus:outline-none"
         />
       </div>
 
@@ -48,7 +57,7 @@ export default function LogWatchedForm({ userId, onNew }: Props) {
         <input
           value={cover}
           onChange={(e) => setCover(e.target.value)}
-          className="w-full bg-ashe rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full bg-ashe text-gray-400 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
@@ -92,6 +101,17 @@ export default function LogWatchedForm({ userId, onNew }: Props) {
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Date Watched selection */}
+      <div>
+        <label className="block text-sm text-gray-400 mb-1">Date Watched</label>
+        <input
+          type="date"
+          value={dateWatched}
+          onChange={(e) => setDateWatched(e.target.value)}
+          className="w-full bg-ashe text-gray-400 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
       </div>
 
       {/* Submit button */}
