@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import WatchedElement from "./WatchedElement";
 import LogWatchedForm from "./LogWatchedForm";
 import { X } from "lucide-react";
@@ -10,6 +10,7 @@ const userId = "60807a5abce72c511dab5559";
 export default function WatchedContainer() {
   const [elements, setElements] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const modalRef = useRef<HTMLDivElement | null>(null);
 
   const fetchWatched = async () => {
     const res = await fetch(`http://localhost:5000/api/watched/${userId}`);
@@ -21,12 +22,40 @@ export default function WatchedContainer() {
     fetchWatched();
   }, []);
 
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setShowModal(false);
+      }
+    };
+    document.addEventListener("keydown", handleEsc);
+    return () => document.removeEventListener("keydown", handleEsc);
+  }, []);
+
+  const handleClickOutside = (e: MouseEvent) => {
+    if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+      setShowModal(false);
+    }
+  };
+
+  useEffect(() => {
+    if (showModal) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showModal]);
+
   return (
     <>
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur flex items-center justify-center z-50">
-          <div className="relative bg-powder rounded-lg shadow-lg p-6 w-full max-w-md">
+          <div
+            ref={modalRef}
+            className="relative bg-powder rounded-lg shadow-lg p-6 w-full max-w-md"
+          >
             {/* Close Button */}
             <button
               onClick={() => setShowModal(false)}
@@ -56,7 +85,7 @@ export default function WatchedContainer() {
         </div>
       </div>
 
-      {/* Button to open modal — rendered inside right aside */}
+      {/* Button to open modal */}
       <div className="fixed top-28 right-8 z-40">
         <button
           onClick={() => setShowModal(true)}
