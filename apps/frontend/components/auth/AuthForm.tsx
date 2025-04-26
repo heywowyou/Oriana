@@ -17,7 +17,7 @@ const AuthForm = () => {
     setError("");
     try {
       await registerUser(email, password, username);
-      console.log("✅ Signed up and synced user");
+      console.log("Signed up and synced user");
     } catch (err) {
       console.error(err);
       setError("Signup failed");
@@ -32,7 +32,7 @@ const AuthForm = () => {
     try {
       const idToken = await loginUser(email, password);
       login(idToken);
-      console.log("✅ Logged in and idToken saved in context");
+      console.log("Logged in and idToken saved in context");
     } catch (err) {
       console.error(err);
       setError("Login failed");
