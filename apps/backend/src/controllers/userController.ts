@@ -79,3 +79,19 @@ export const getMe = async (req: Request, res: Response) => {
       .json({ message: "Internal server error", error: error.message });
   }
 };
+
+export const findEmailByUsername = async (req: Request, res: Response) => {
+  const { username } = req.body;
+
+  if (!username) {
+    return res.status(400).json({ message: "Username is required" });
+  }
+
+  const user = await User.findOne({ username });
+
+  if (!user) {
+    return res.status(404).json({ message: "Username not found" });
+  }
+
+  res.status(200).json({ email: user.email });
+};
