@@ -1,29 +1,31 @@
 import { Request, Response } from "express";
-import User from "../models/users";
-import { catchAsync } from "../utils/catchAsync"; // 👈 important
+import User from "../models/users"; // adjust if needed
+import { catchAsync } from "../utils/catchAsync";
 
 export const createIfNotExists = catchAsync(
   async (req: Request, res: Response) => {
-    const firebaseUid = (req as any).user.uid;
-    const email = (req as any).user.email;
+    const { uid, email, name, picture } = req.body;
 
-    if (!firebaseUid || !email) {
-      return res.status(400).json({ error: "Missing user information" });
+    console.log("🛠️ Received request to create or find user:", { uid, email });
+
+    // Try to find existing user
+    let user = await User.findOne({ uid });
+
+    if (user) {
+      console.log("✅ User already exists:", user.uid);
+      return res.status(200).json({ message: "User already exists", user });
     }
 
-    let user = await User.findOne({ firebaseUid });
+    // Create new user
+    user = await User.create({
+      uid,
+      email,
+      name,
+      picture,
+    });
 
-    if (!user) {
-      user = new User({
-        firebaseUid,
-        email,
-      });
+    console.log("🎉 Created new user:", user.uid);
 
-      await user.save();
-    }
-
-    res
-      .status(200)
-      .json({ message: "User exists or created successfully", user });
+    res.status(201).json({ message: "User created", user });
   }
 );
