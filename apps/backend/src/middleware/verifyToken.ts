@@ -1,18 +1,24 @@
+import { admin } from "../lib/firebaseAdmin";
 import { Request, Response, NextFunction } from "express";
-import { adminAuth } from "../lib/firebaseAdmin";
-import { catchAsync } from "../utils/catchAsync"; // Correct import
 
-export const verifyToken = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ error: "Unauthorized: No token provided" });
-    }
+export const verifyToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const authHeader = req.headers.authorization;
 
-    const token = authHeader.split("Bearer ")[1];
-    const decodedToken = await adminAuth.verifyIdToken(token);
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ message: "No token provided" });
+  }
 
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const decodedToken = await admin.auth().verifyIdToken(token);
     (req as any).user = decodedToken;
     next();
+  } catch (error) {
+    return res.status(401).json({ message: "Invalid or expired token" });
   }
-);
+};
