@@ -1,15 +1,17 @@
 import express from "express";
+import { verifyToken } from "../middleware/verifyToken";
 import {
-  addWatchedElement,
-  getWatchedElements,
+  createWatched,
+  getWatchedForUser,
 } from "../controllers/watchedElementController";
+import catchAsync from "../utils/catchAsync";
 
 const router = express.Router();
 
-// POST /api/watched → Add a new watched element
-router.post("/", addWatchedElement);
+// GET /watched/me - Fetch watched elements for logged-in user
+router.get("/me", catchAsync(verifyToken), getWatchedForUser);
 
-// GET /api/watched/:userId → Get all watched elements for a user
-router.get("/:userId", getWatchedElements);
+// POST /watched - Create new watched element for logged-in user
+router.post("/", catchAsync(verifyToken), createWatched);
 
 export default router;

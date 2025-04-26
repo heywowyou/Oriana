@@ -1,26 +1,28 @@
 import { Request, Response } from "express";
 import WatchedElement from "../models/watchedElements";
 
-// Add a new watched element to the database
-export const addWatchedElement = async (req: Request, res: Response) => {
-  try {
-    const newElement = new WatchedElement(req.body);
-    const saved = await newElement.save();
-    res.status(201).json(saved);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to save watched element" });
-  }
+// Fetch all watched elements for logged-in user
+export const getWatchedForUser = async (req: Request, res: Response) => {
+  const userId = (req as any).uid; // from the token
+  const watched = await WatchedElement.find({ user: userId });
+  res.status(200).json(watched);
 };
 
-// Get all watched elements for a specific user
-export const getWatchedElements = async (req: Request, res: Response) => {
-  try {
-    const { userId } = req.params;
-    const elements = await WatchedElement.find({ user: userId }).sort({
-      dateWatched: -1,
-    });
-    res.status(200).json(elements);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch watched elements" });
-  }
+// Create new watched element for logged-in user
+export const createWatched = async (req: Request, res: Response) => {
+  const userId = (req as any).uid; // from the token
+  const { title, cover, type, rating, dateWatched } = req.body;
+
+  const watchedElement = new WatchedElement({
+    user: userId,
+    title,
+    cover,
+    type,
+    rating,
+    dateWatched,
+  });
+
+  await watchedElement.save();
+
+  res.status(201).json(watchedElement);
 };

@@ -2,7 +2,10 @@ import mongoose, { Schema } from "mongoose";
 
 const watchedElementSchema = new Schema(
   {
-    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    user: {
+      type: String,
+      required: true,
+    },
     type: { type: String, enum: ["movie", "show", "anime"], required: true },
     title: { type: String, required: true },
     cover: { type: String },

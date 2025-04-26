@@ -13,7 +13,7 @@ export default function WatchedContainer() {
   const { idToken } = useAuth();
 
   const fetchWatched = async () => {
-    const res = await fetch(`http://localhost:4000/api/watched/me`, {
+    const res = await fetch(`http://localhost:4000/watched/me`, {
       headers: {
         Authorization: `Bearer ${idToken}`,
       },

@@ -2,7 +2,8 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
-import userRoutes from "./routes/userRoutes"; // <--- add this!
+import userRoutes from "./routes/userRoutes";
+import watchedRoutes from "./routes/watchedElementRoutes";
 
 dotenv.config();
 const app = express();
@@ -11,6 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/users", userRoutes);
+app.use("/watched", watchedRoutes);
 
 app.get("/ping", (req, res) => {
   console.log("Received a ping request");
