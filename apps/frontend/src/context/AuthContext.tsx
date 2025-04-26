@@ -12,14 +12,21 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [idToken, setIdToken] = useState<string | null>(null);
+  const [idToken, setIdToken] = useState<string | null>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("idToken");
+    }
+    return null;
+  });
 
   const login = (token: string) => {
     setIdToken(token);
+    localStorage.setItem("idToken", token); // Save token to localStorage
   };
 
   const logout = () => {
     setIdToken(null);
+    localStorage.removeItem("idToken"); // Clear token from localStorage
   };
 
   const value = {
