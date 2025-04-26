@@ -30,10 +30,17 @@ export default function RootLayout({
   );
 }
 
-// 👇 Create this sub-component to access AuthContext
 function InnerLayout({ children }: { children: React.ReactNode }) {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, loading } = useAuth();
   const [modal, setModal] = useState<"login" | "register">("login");
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p>Loading...</p>{" "}
+      </div>
+    );
+  }
 
   if (!isLoggedIn) {
     return (
