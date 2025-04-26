@@ -38,18 +38,18 @@ const AuthForm = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-4 border rounded-md mt-10">
-      <h1 className="text-2xl font-bold mb-4 text-center">Sign Up / Login</h1>
+    <div className="max-w mx-auto bg-ashe p-6 rounded-md mt-10">
+      <h1 className="text-lg mb-4 text-center">Sign Up / Login</h1>
       <div className="flex flex-col gap-4">
         <input
-          className="border p-2 rounded"
+          className="bg-powder text-gray-400 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
         <input
-          className="border p-2 rounded"
+          className="bg-powder text-gray-400 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           type="password"
           placeholder="Password"
           value={password}
@@ -60,14 +60,14 @@ const AuthForm = () => {
 
         <div className="flex gap-2">
           <button
-            className="bg-blue-500 text-white p-2 rounded w-full"
+            className="bg-powder text-white p-2 rounded-lg w-full"
             onClick={handleSignup}
             disabled={loading}
           >
             {loading ? "Loading..." : "Sign Up"}
           </button>
           <button
-            className="bg-green-500 text-white p-2 rounded w-full"
+            className="bg-blue-500 text-white p-2 rounded-lg w-full"
             onClick={handleLogin}
             disabled={loading}
           >
