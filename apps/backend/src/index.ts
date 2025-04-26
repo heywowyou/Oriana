@@ -14,8 +14,8 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use("/api/watched", watchedElementRoutes);
-app.use("/api/users", userRoutes);
+app.use("/watched", watchedElementRoutes);
+app.use("/users", userRoutes);
 
 // MongoDB connection
 mongoose
