@@ -35,3 +35,12 @@ export async function login(email: string, password: string) {
 export async function logout() {
   await signOut(auth);
 }
+
+// Function to get the current user's Firebase ID token
+// @returns The ID token (string) or null if not authenticated
+export async function getCurrentToken() {
+  const user = auth.currentUser;
+  if (!user) return null;
+
+  return await user.getIdToken();
+}
