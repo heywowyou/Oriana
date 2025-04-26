@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { registerUser, loginUser } from "../../src/services/authService";
+import { useAuth } from "../../src/context/AuthContext";
 
 const AuthForm = () => {
   const [username, setUsername] = useState("");
@@ -9,6 +10,7 @@ const AuthForm = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { login } = useAuth();
 
   const handleSignup = async () => {
     setLoading(true);
@@ -29,7 +31,8 @@ const AuthForm = () => {
     setError("");
     try {
       const idToken = await loginUser(email, password);
-      console.log("✅ Logged in. idToken:", idToken);
+      login(idToken);
+      console.log("✅ Logged in and idToken saved in context");
     } catch (err) {
       console.error(err);
       setError("Login failed");
