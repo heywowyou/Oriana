@@ -12,6 +12,7 @@ export async function signup(email: string, password: string) {
     email,
     password
   );
+  await syncUserWithBackend();
   return userCredential.user;
 }
 
@@ -22,6 +23,7 @@ export async function login(email: string, password: string) {
     email,
     password
   );
+  await syncUserWithBackend();
   return userCredential.user;
 }
 
@@ -40,7 +42,13 @@ export async function getCurrentToken() {
 
 // Sync user with backend
 export async function syncUserWithBackend() {
-  const token = await getCurrentToken();
+  const user = auth.currentUser;
+  if (!user) {
+    console.error("No user available. Might not be logged in.");
+    return;
+  }
+
+  const token = await user.getIdToken();
   if (!token) {
     console.error("No token available. User might not be logged in.");
     return;
@@ -54,6 +62,12 @@ export async function syncUserWithBackend() {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        uid: user.uid,
+        email: user.email,
+        name: user.displayName,
+        picture: user.photoURL,
+      }),
     }
   );
 }
