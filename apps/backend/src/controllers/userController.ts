@@ -1,5 +1,3 @@
-// apps/backend/src/controllers/userController.ts
-
 import { Request, Response } from "express";
 import User from "../models/users";
 import { catchAsync } from "../utils/catchAsync"; // 👈 important
