@@ -3,8 +3,8 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 
-import watchedElementRoutes from "../routes/watchedElementRoutes";
-import userRoutes from "../routes/userRoutes";
+import watchedElementRoutes from "../src/routes/watchedElementRoutes";
+import userRoutes from "../src/routes/userRoutes";
 
 dotenv.config();
 

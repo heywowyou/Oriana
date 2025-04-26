@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import WatchedElement from "../models/WatchedElement";
+import WatchedElement from "../models/watchedElements";
 
 // Add a new watched element to the database
 export const addWatchedElement = async (req: Request, res: Response) => {
