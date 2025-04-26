@@ -1,24 +1,22 @@
-import { admin } from "../lib/firebaseAdmin";
 import { Request, Response, NextFunction } from "express";
+import admin from "firebase-admin";
 
 export const verifyToken = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const authHeader = req.headers.authorization;
+  const token = req.headers.authorization?.split(" ")[1];
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  if (!token) {
     return res.status(401).json({ message: "No token provided" });
   }
 
-  const token = authHeader.split(" ")[1];
-
   try {
     const decodedToken = await admin.auth().verifyIdToken(token);
-    (req as any).user = decodedToken;
+    (req as any).uid = decodedToken.uid;
     next();
   } catch (error) {
-    return res.status(401).json({ message: "Invalid or expired token" });
+    return res.status(401).json({ message: "Unauthorized" });
   }
 };

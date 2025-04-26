@@ -54,20 +54,38 @@ export async function syncUserWithBackend() {
     return;
   }
 
-  await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/createIfNotExists`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        uid: user.uid,
-        email: user.email,
-        name: user.displayName,
-        picture: user.photoURL,
-      }),
+  console.log("➡️ Using ID token:", token);
+
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/createIfNotExists`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          uid: user.uid,
+          email: user.email,
+          name: user.displayName,
+          picture: user.photoURL,
+        }),
+      }
+    );
+
+    if (!res.ok) {
+      console.error(
+        "❌ Failed to sync user with backend:",
+        res.status,
+        res.statusText
+      );
+      const errorData = await res.json();
+      console.error("Backend error:", errorData);
+    } else {
+      console.log("✅ Successfully synced user with backend!");
     }
-  );
+  } catch (error) {
+    console.error("❌ Fetch error syncing user:", error);
+  }
 }

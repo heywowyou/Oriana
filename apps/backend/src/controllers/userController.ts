@@ -1,31 +1,45 @@
 import { Request, Response } from "express";
-import User from "../models/users"; // adjust if needed
-import { catchAsync } from "../utils/catchAsync";
+import { admin } from "../lib/firebaseAdmin";
+import User from "../models/users";
 
-export const createIfNotExists = catchAsync(
-  async (req: Request, res: Response) => {
-    const { uid, email, name, picture } = req.body;
+export const createUser = async (req: Request, res: Response) => {
+  try {
+    const { email, password, username } = req.body;
 
-    console.log("🛠️ Received request to create or find user:", { uid, email });
-
-    // Try to find existing user
-    let user = await User.findOne({ uid });
-
-    if (user) {
-      console.log("✅ User already exists:", user.uid);
-      return res.status(200).json({ message: "User already exists", user });
+    // Basic validation
+    if (!email || !password || !username) {
+      return res.status(400).json({ message: "Missing required fields" });
     }
 
-    // Create new user
-    user = await User.create({
-      uid,
+    // Create user in Firebase
+    const firebaseUser = await admin.auth().createUser({
       email,
-      name,
-      picture,
+      password,
+      displayName: username,
     });
 
-    console.log("🎉 Created new user:", user.uid);
+    // Save user in MongoDB
+    const newUser = new User({
+      firebaseUid: firebaseUser.uid,
+      email,
+      username,
+    });
 
-    res.status(201).json({ message: "User created", user });
+    await newUser.save();
+
+    res.status(201).json({
+      message: "User registered successfully",
+      user: {
+        id: newUser._id,
+        firebaseUid: newUser.firebaseUid,
+        email: newUser.email,
+        username: newUser.username,
+      },
+    });
+  } catch (error: any) {
+    console.error("Error creating user:", error.message);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
-);
+};
