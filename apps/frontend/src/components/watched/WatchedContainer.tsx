@@ -13,7 +13,7 @@ export default function WatchedContainer() {
   const modalRef = useRef<HTMLDivElement | null>(null);
 
   const fetchWatched = async () => {
-    const res = await fetch(`http://localhost:5000/api/watched/${userId}`);
+    const res = await fetch(`http://localhost:4000/api/watched/${userId}`);
     const data = await res.json();
     setElements(data);
   };
