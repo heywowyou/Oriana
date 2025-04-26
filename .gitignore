@@ -33,3 +33,7 @@ yarn-error.log*
 # Electron & Desktop
 *.asar
 *.bak
+
+# Firebase Admin Private Key
+apps/backend/src/lib/firebaseAdmin.ts
+service-account-key.json
