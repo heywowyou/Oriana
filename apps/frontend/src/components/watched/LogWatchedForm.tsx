@@ -2,26 +2,30 @@
 
 import { useState } from "react";
 import { Star } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 type Props = {
   userId: string;
   onNew: () => void;
 };
 
-export default function LogWatchedForm({ userId, onNew }: Props) {
+export default function LogWatchedForm({ onNew }: { onNew: () => void }) {
   const [title, setTitle] = useState("");
   const [cover, setCover] = useState("");
   const [type, setType] = useState<"movie" | "show" | "anime">("movie");
   const [rating, setRating] = useState(0);
-  const [dateWatched, setDateWatched] = useState(""); // New state
+  const [dateWatched, setDateWatched] = useState("");
+  const { idToken } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await fetch("http://localhost:4000/api/watched", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${idToken}`, // <---
+      },
       body: JSON.stringify({
-        user: userId,
         title,
         cover,
         type,

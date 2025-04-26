@@ -4,16 +4,21 @@ import { useEffect, useRef, useState } from "react";
 import WatchedElement from "./WatchedElement";
 import LogWatchedForm from "./LogWatchedForm";
 import { X } from "lucide-react";
-
-const userId = "60807a5abce72c511dab5559";
+import { useAuth } from "@/context/AuthContext";
 
 export default function WatchedContainer() {
   const [elements, setElements] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const modalRef = useRef<HTMLDivElement | null>(null);
+  const { idToken } = useAuth();
 
   const fetchWatched = async () => {
-    const res = await fetch(`http://localhost:4000/api/watched/${userId}`);
+    const res = await fetch(`http://localhost:4000/api/watched/me`, {
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+      },
+    });
+
     const data = await res.json();
     setElements(data);
   };
@@ -66,7 +71,6 @@ export default function WatchedContainer() {
             </button>
 
             <LogWatchedForm
-              userId={userId}
               onNew={() => {
                 fetchWatched();
                 setShowModal(false);
