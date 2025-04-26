@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useAuth } from "../../src/context/AuthContext";
-import { loginWithUsername } from "../../src/services/authService";
+import { useAuth } from "@/context/AuthContext";
+import { loginWithUsername } from "@/services/authService";
 
 interface LoginModalProps {
   onSwitch: () => void;

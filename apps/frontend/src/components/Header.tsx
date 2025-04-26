@@ -1,8 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import LogoutButton from "@/components/auth/LogoutButton";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Header() {
+  const { isLoggedIn } = useAuth();
+
   return (
     <header className="bg-ashe text-white py-4 shadow-md">
       <div className="max-w-[1200px] mx-auto flex justify-start items-baseline gap-10">
@@ -14,6 +18,7 @@ export default function Header() {
             Library
           </Link>
         </nav>
+        <nav>{isLoggedIn && <LogoutButton />}</nav>
       </div>
     </header>
   );

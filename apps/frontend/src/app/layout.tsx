@@ -1,7 +1,7 @@
 import { Roboto } from "next/font/google";
 import "./globals.css";
-import Header from "../../components/Header";
-import { AuthProvider } from "../context/AuthContext";
+import Header from "@/components/Header";
+import { AuthProvider } from "@/context/AuthContext";
 
 const roboto = Roboto({
   subsets: ["latin"],

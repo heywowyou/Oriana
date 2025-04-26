@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { registerUser, loginUser } from "../../src/services/authService";
-import { useAuth } from "../../src/context/AuthContext";
+import { registerUser, loginUser } from "../../services/authService";
+import { useAuth } from "../../context/AuthContext";
 
 const AuthForm = () => {
   const [username, setUsername] = useState("");

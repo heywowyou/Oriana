@@ -1,4 +1,4 @@
-import { auth } from "../lib/firebase";
+import { auth } from "@/lib/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 
 // Register a new user
