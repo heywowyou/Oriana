@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { signup, login } from "../../src/services/auth";
+import { registerUser, loginUser } from "../../src/services/authService";
 
 const AuthForm = () => {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -13,7 +14,7 @@ const AuthForm = () => {
     setLoading(true);
     setError("");
     try {
-      await signup(email, password);
+      await registerUser(email, password, username);
       console.log("✅ Signed up and synced user");
     } catch (err) {
       console.error(err);
@@ -27,8 +28,8 @@ const AuthForm = () => {
     setLoading(true);
     setError("");
     try {
-      await login(email, password);
-      console.log("✅ Logged in and synced user");
+      const idToken = await loginUser(email, password);
+      console.log("✅ Logged in. idToken:", idToken);
     } catch (err) {
       console.error(err);
       setError("Login failed");
@@ -41,6 +42,14 @@ const AuthForm = () => {
     <div className="max-w mx-auto bg-ashe p-6 rounded-md mt-10">
       <h1 className="text-lg mb-4 text-center">Sign Up / Login</h1>
       <div className="flex flex-col gap-4">
+        <input
+          className="bg-powder text-gray-400 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+
         <input
           className="bg-powder text-gray-400 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           type="email"
