@@ -1,14 +1,11 @@
-import { auth } from "@/lib/firebase"; // Import the Firebase Auth instance
+import { auth } from "@/lib/firebase"; // Firebase Auth instance
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
 
-// Function to sign up a new user with email and password
-// @param email The user's email
-// @param password The user's password
-// @returns The created user object
+// Signup
 export async function signup(email: string, password: string) {
   const userCredential = await createUserWithEmailAndPassword(
     auth,
@@ -18,10 +15,7 @@ export async function signup(email: string, password: string) {
   return userCredential.user;
 }
 
-// Function to log in an existing user
-// @param email The user's email
-// @param password The user's password
-// @returns The logged-in user object
+// Login
 export async function login(email: string, password: string) {
   const userCredential = await signInWithEmailAndPassword(
     auth,
@@ -31,16 +25,35 @@ export async function login(email: string, password: string) {
   return userCredential.user;
 }
 
-// Function to log out the currently authenticated user
+// Logout
 export async function logout() {
   await signOut(auth);
 }
 
-// Function to get the current user's Firebase ID token
-// @returns The ID token (string) or null if not authenticated
+// Get current user's ID token
 export async function getCurrentToken() {
   const user = auth.currentUser;
   if (!user) return null;
 
   return await user.getIdToken();
+}
+
+// Sync user with backend
+export async function syncUserWithBackend() {
+  const token = await getCurrentToken();
+  if (!token) {
+    console.error("No token available. User might not be logged in.");
+    return;
+  }
+
+  await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/createIfNotExists`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
 }
