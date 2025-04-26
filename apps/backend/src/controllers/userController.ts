@@ -6,9 +6,20 @@ export const createUser = async (req: Request, res: Response) => {
   try {
     const { email, password, username } = req.body;
 
-    // Basic validation
     if (!email || !password || !username) {
       return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    // Check if email already exists
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail) {
+      return res.status(400).json({ message: "Email already in use" });
+    }
+
+    // Check if username already exists
+    const existingUsername = await User.findOne({ username });
+    if (existingUsername) {
+      return res.status(400).json({ message: "Username already taken" });
     }
 
     // Create user in Firebase
