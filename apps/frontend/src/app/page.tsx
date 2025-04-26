@@ -1,12 +1,24 @@
+"use client";
+
+import { useAuth } from "../context/AuthContext";
 import AuthForm from "../../components/auth/AuthForm";
 
-export default function Home() {
-  return (
-    <main className="bg-powder min-h-screen flex items-center justify-center text-white text-center px-4">
-      <div>
-        <h1 className="text-5xl font-bold">Welcome to Oriana</h1>
+const Home = () => {
+  const { isLoggedIn, idToken } = useAuth();
+
+  if (!isLoggedIn) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
         <AuthForm />
       </div>
-    </main>
+    );
+  }
+
+  return (
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-6">Welcome back!</h1>
+    </div>
   );
-}
+};
+
+export default Home;
