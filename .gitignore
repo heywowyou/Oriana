@@ -1,39 +1,51 @@
-# Node & Package Files
+# Node modules
 node_modules/
-yarn.lock
-package-lock.json
-.pnpm-store/
+apps/*/node_modules/
 
-# Build Outputs
-dist/
-build/
-out/
+# Build outputs (Next.js, etc.)
 .next/
-.cache/
-coverage/
+dist/
+out/
+build/
 
-# Environment & Secrets
+# Environment files
 .env
 .env.local
 .env.*.local
-*.pem
 
-# Logs & Debug
+# Firebase Admin private key
+apps/backend/src/lib/firebaseAdmin.ts
+service-account-key.json
+
+# Logs
+logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
 
-# Editor/OS Specific
+# OS-specific files
 .DS_Store
+Thumbs.db
+
+# Editor folders
 .vscode/
 .idea/
 
-# Electron & Desktop
-*.asar
-*.bak
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
 
-# Firebase Admin Private Key
-apps/backend/src/lib/firebaseAdmin.ts
-service-account-key.json
+# Electron outputs
+apps/desktop/*.asar
+apps/desktop/release-builds/
+apps/desktop/*.dmg
+apps/desktop/*.exe
+apps/desktop/*.zip
+
+# Others
+coverage/
