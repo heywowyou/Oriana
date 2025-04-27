@@ -1,19 +1,18 @@
 import admin from "firebase-admin";
-import path from "path";
-
-import "dotenv/config";
-
-// Load the JSON
-const serviceAccount = require(path.resolve(
-  __dirname,
-  "../../service-account.json"
-));
 
 if (!admin.apps.length) {
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+    credential: admin.credential.cert({
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    }),
     storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
   });
+
+  console.log("Firebase Admin initialized");
 }
 
-export { admin };
+export const bucket = admin.storage().bucket();
+export const auth = admin.auth();
+export default admin;
