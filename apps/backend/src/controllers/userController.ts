@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { admin } from "../lib/firebaseAdmin";
+import admin from "../lib/firebaseAdmin";
 import User from "../models/users";
 
 export const createUser = async (req: Request, res: Response) => {

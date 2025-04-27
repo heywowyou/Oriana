@@ -1,12 +1,11 @@
 import admin from "firebase-admin";
+import { firebaseCredentials } from "./firebaseCredentials";
+
+console.log("ENV project id:", process.env.FIREBASE_PROJECT_ID);
 
 if (!admin.apps.length) {
   admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    }),
+    credential: admin.credential.cert(firebaseCredentials),
     storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
   });
 
