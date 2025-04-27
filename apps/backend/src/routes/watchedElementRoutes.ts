@@ -16,6 +16,6 @@ router.get("/me", catchAsync(verifyToken), getWatchedForUser);
 router.post("/", catchAsync(verifyToken), createWatched);
 
 // PUT /watched/:id - Update existing element data
-router.put("/watched/:id", catchAsync(verifyToken), catchAsync(updateWatched));
+router.put("/:id", catchAsync(verifyToken), catchAsync(updateWatched));
 
 export default router;

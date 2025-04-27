@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import WatchedElement from "../models/watchedElements";
-import { getStorage } from "firebase-admin/storage";
 
 // Fetch all watched elements for logged-in user
 export const getWatchedForUser = async (req: Request, res: Response) => {
@@ -42,20 +41,6 @@ export const updateWatched = async (req: Request, res: Response) => {
 
   if (watchedElement.user.toString() !== userId) {
     return res.status(403).json({ message: "Unauthorized" });
-  }
-
-  // Delete old cover if changed
-  if (cover && cover !== watchedElement.cover) {
-    const bucket = getStorage().bucket();
-    try {
-      const oldFilePath = decodeURIComponent(
-        watchedElement.cover.split("/o/")[1].split("?")[0]
-      );
-      const file = bucket.file(oldFilePath);
-      await file.delete();
-    } catch (error: any) {
-      console.error("Failed to delete old cover from Firebase:", error.message);
-    }
   }
 
   // Update fields
