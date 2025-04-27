@@ -11,7 +11,7 @@ export const getWatchedForUser = async (req: Request, res: Response) => {
 // Create new watched element for logged-in user
 export const createWatched = async (req: Request, res: Response) => {
   const userId = (req as any).uid; // from the token
-  const { title, cover, type, rating, dateWatched } = req.body;
+  const { title, cover, type, rating, favorite, dateWatched } = req.body;
 
   const watchedElement = new WatchedElement({
     user: userId,
@@ -19,6 +19,7 @@ export const createWatched = async (req: Request, res: Response) => {
     cover,
     type,
     rating,
+    favorite,
     dateWatched,
   });
 
@@ -31,7 +32,7 @@ export const createWatched = async (req: Request, res: Response) => {
 export const updateWatched = async (req: Request, res: Response) => {
   const userId = (req as any).uid; // from the token
   const { id } = req.params;
-  const { title, cover, type, rating, dateWatched } = req.body;
+  const { title, cover, type, rating, favorite, dateWatched } = req.body;
 
   const watchedElement = await WatchedElement.findById(id);
 
@@ -48,6 +49,7 @@ export const updateWatched = async (req: Request, res: Response) => {
   watchedElement.cover = cover;
   watchedElement.type = type;
   watchedElement.rating = rating;
+  watchedElement.favorite = favorite;
   watchedElement.dateWatched = dateWatched;
 
   await watchedElement.save();

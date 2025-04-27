@@ -1,4 +1,4 @@
-import { Star } from "lucide-react";
+import { Star, Heart } from "lucide-react";
 
 type WatchedElementProps = {
   _id: string;
@@ -6,6 +6,7 @@ type WatchedElementProps = {
   cover?: string;
   rating?: number;
   type: "movie" | "show" | "anime";
+  favorite?: boolean;
   dateWatched?: string;
   onEdit?: (element: WatchedElementProps) => void;
 };
@@ -16,6 +17,7 @@ export default function WatchedElement({
   cover,
   rating,
   type,
+  favorite,
   dateWatched,
   onEdit,
 }: WatchedElementProps) {
@@ -40,7 +42,9 @@ export default function WatchedElement({
         {/* Edit button (appears on hover only if onEdit is provided) */}
         {onEdit && (
           <button
-            onClick={() => onEdit({ _id, title, cover, rating, type })}
+            onClick={() =>
+              onEdit({ _id, title, cover, rating, type, favorite })
+            }
             className="absolute top-2 right-2 bg-blue-600 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition"
           >
             Edit
@@ -49,8 +53,8 @@ export default function WatchedElement({
       </div>
 
       <div className="flex items-center justify-between w-full mt-2 text-gray-400">
-        {/* Stars */}
-        <div className="flex items-center gap-0.5">
+        {/* Stars and Heart */}
+        <div className="flex items-center gap-1">
           {[1, 2, 3, 4, 5].map((i) => (
             <Star
               key={i}
@@ -61,6 +65,9 @@ export default function WatchedElement({
               }`}
             />
           ))}
+
+          {/* Favorite Heart */}
+          {favorite && <Heart className="w-4 h-4 text-red-500 fill-red-500" />}
         </div>
 
         {/* Date watched */}
