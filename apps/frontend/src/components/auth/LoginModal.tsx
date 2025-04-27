@@ -30,20 +30,20 @@ const LoginModal = ({ onSwitch }: LoginModalProps) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white p-8 rounded shadow-md w-80">
-        <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
+    <div className="fixed inset-0 bg-powder flex justify-center items-center z-50 cursor-default">
+      <div className="bg-ashe p-8 rounded shadow-md w-80">
+        <h2 className="text-zinc-400 text-xl mb-4 text-center">Login</h2>
         <input
           type="text"
           placeholder="Username"
-          className="w-full p-2 mb-4 border rounded"
+          className="w-full bg-powder text-zinc-400 p-2 mb-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
         <input
           type="password"
           placeholder="Password"
-          className="w-full p-2 mb-4 border rounded"
+          className="w-full bg-powder text-zinc-400 p-2 mb-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
@@ -51,15 +51,15 @@ const LoginModal = ({ onSwitch }: LoginModalProps) => {
         <button
           onClick={handleLogin}
           disabled={loading}
-          className="w-full bg-blue-600 text-white p-2 rounded mb-2"
+          className="w-full bg-blue-600 hover:bg-blue-500 text-white p-2 rounded mb-2"
         >
           {loading ? "Logging in..." : "Login"}
         </button>
-        <p className="text-center text-sm">
-          Don't have an account?{" "}
+        <p className="text-center text-sm text-zinc-400">
+          Don't have an account ?{" "}
           <span
             onClick={onSwitch}
-            className="text-blue-600 cursor-pointer hover:underline"
+            className="text-blue-400 hover:text-blue-300 cursor-pointer"
           >
             Register
           </span>
