@@ -3,12 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import WatchedElement from "./WatchedElement";
 import LogWatchedForm from "./LogWatchedForm";
+import EditWatchedForm from "./EditWatchedForm";
 import { X } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 export default function WatchedContainer() {
   const [elements, setElements] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [editingElement, setEditingElement] = useState<any>(null);
   const modalRef = useRef<HTMLDivElement | null>(null);
   const { idToken } = useAuth();
 
@@ -31,6 +33,7 @@ export default function WatchedContainer() {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setShowModal(false);
+        setEditingElement(null);
       }
     };
     document.addEventListener("keydown", handleEsc);
@@ -40,6 +43,7 @@ export default function WatchedContainer() {
   const handleClickOutside = (e: MouseEvent) => {
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
       setShowModal(false);
+      setEditingElement(null);
     }
   };
 
@@ -52,6 +56,11 @@ export default function WatchedContainer() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showModal]);
 
+  const handleEdit = (element: any) => {
+    setEditingElement(element);
+    setShowModal(true);
+  };
+
   return (
     <>
       {/* Modal */}
@@ -63,19 +72,33 @@ export default function WatchedContainer() {
           >
             {/* Close Button */}
             <button
-              onClick={() => setShowModal(false)}
+              onClick={() => {
+                setShowModal(false);
+                setEditingElement(null);
+              }}
               className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
               aria-label="Close"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <LogWatchedForm
-              onNew={() => {
-                fetchWatched();
-                setShowModal(false);
-              }}
-            />
+            {editingElement ? (
+              <EditWatchedForm
+                element={editingElement}
+                onUpdated={() => {
+                  fetchWatched();
+                  setShowModal(false);
+                  setEditingElement(null);
+                }}
+              />
+            ) : (
+              <LogWatchedForm
+                onNew={() => {
+                  fetchWatched();
+                  setShowModal(false);
+                }}
+              />
+            )}
           </div>
         </div>
       )}
@@ -84,15 +107,22 @@ export default function WatchedContainer() {
       <div className="bg-ashe rounded-lg min-h-screen mt-10 p-6">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
           {elements.map((element: any) => (
-            <WatchedElement key={element._id} {...element} />
+            <WatchedElement
+              key={element._id}
+              {...element}
+              onEdit={handleEdit}
+            />
           ))}
         </div>
       </div>
 
-      {/* Button to open modal */}
+      {/* Button to open Create modal */}
       <div className="fixed top-28 right-8 z-40">
         <button
-          onClick={() => setShowModal(true)}
+          onClick={() => {
+            setShowModal(true);
+            setEditingElement(null);
+          }}
           className="w-12 h-12 bg-blue-600 hover:bg-blue-500 text-white rounded-lg shadow-lg transition"
         >
           +
