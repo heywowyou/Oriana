@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Star } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { uploadImage } from "@/lib/uploadImage";
 
 type Props = {
   userId: string;
@@ -15,6 +16,7 @@ export default function LogWatchedForm({ onNew }: { onNew: () => void }) {
   const [type, setType] = useState<"movie" | "show" | "anime">("movie");
   const [rating, setRating] = useState(0);
   const [dateWatched, setDateWatched] = useState("");
+  const [uploading, setUploading] = useState(false);
   const { idToken } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,7 +25,7 @@ export default function LogWatchedForm({ onNew }: { onNew: () => void }) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${idToken}`, // <---
+        Authorization: `Bearer ${idToken}`,
       },
       body: JSON.stringify({
         title,
@@ -42,6 +44,19 @@ export default function LogWatchedForm({ onNew }: { onNew: () => void }) {
     onNew();
   };
 
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setUploading(true);
+      try {
+        const url = await uploadImage(file);
+        setCover(url);
+      } finally {
+        setUploading(false);
+      }
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6 caret-gray-400">
       {/* Title */}
@@ -55,14 +70,24 @@ export default function LogWatchedForm({ onNew }: { onNew: () => void }) {
         />
       </div>
 
-      {/* Cover URL */}
+      {/* Cover URL and Upload */}
       <div>
         <label className="block text-sm text-gray-400 mb-1">Cover URL</label>
         <input
           value={cover}
           onChange={(e) => setCover(e.target.value)}
-          className="w-full bg-ashe text-gray-400 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Paste an image URL or upload a file"
+          className="w-full bg-ashe text-gray-400 rounded px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="block text-sm text-gray-400"
+        />
+        {uploading && (
+          <p className="text-xs text-gray-400 mt-1">Uploading...</p>
+        )}
       </div>
 
       {/* Rating selection */}
