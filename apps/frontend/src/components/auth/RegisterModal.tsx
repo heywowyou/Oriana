@@ -2,15 +2,14 @@
 
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { registerUser, loginUser } from "@/services/authService";
+import { registerUser } from "@/services/authService";
 
 interface RegisterModalProps {
-  onSwitch: () => void; // Switch to login modal
+  onSwitch: () => void;
 }
 
 const RegisterModal = ({ onSwitch }: RegisterModalProps) => {
   const { login } = useAuth();
-  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,15 +19,11 @@ const RegisterModal = ({ onSwitch }: RegisterModalProps) => {
     setLoading(true);
     setError("");
     try {
-      // Step 1: Register user to backend
-      await registerUser(email, password, username);
-
-      // Step 2: Immediately log in user
-      const idToken = await loginUser(email, password);
+      const idToken = await registerUser(email, password);
       login(idToken);
     } catch (err) {
       console.error(err);
-      setError("Registration failed. Try another username or email.");
+      setError("Registration failed. Try another email.");
     } finally {
       setLoading(false);
     }
@@ -38,13 +33,6 @@ const RegisterModal = ({ onSwitch }: RegisterModalProps) => {
     <div className="fixed inset-0 bg-powder flex justify-center items-center z-50 cursor-default">
       <div className="bg-ashe p-8 rounded shadow-md w-80">
         <h2 className="text-zinc-400 text-xl mb-4 text-center">Register</h2>
-        <input
-          type="text"
-          placeholder="Username"
-          className="w-full bg-powder text-zinc-400 p-2 mb-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
         <input
           type="email"
           placeholder="Email"

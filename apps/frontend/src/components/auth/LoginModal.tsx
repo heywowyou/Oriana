@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { loginWithUsername } from "@/services/authService";
+import { loginUser } from "@/services/authService";
 
 interface LoginModalProps {
   onSwitch: () => void;
@@ -10,7 +10,7 @@ interface LoginModalProps {
 
 const LoginModal = ({ onSwitch }: LoginModalProps) => {
   const { login } = useAuth();
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -19,7 +19,7 @@ const LoginModal = ({ onSwitch }: LoginModalProps) => {
     setLoading(true);
     setError("");
     try {
-      const idToken = await loginWithUsername(username, password);
+      const idToken = await loginUser(email, password);
       login(idToken);
     } catch (err) {
       console.error(err);
@@ -34,11 +34,11 @@ const LoginModal = ({ onSwitch }: LoginModalProps) => {
       <div className="bg-ashe p-8 rounded shadow-md w-80">
         <h2 className="text-zinc-400 text-xl mb-4 text-center">Login</h2>
         <input
-          type="text"
-          placeholder="Username"
+          type="email"
+          placeholder="Email"
           className="w-full bg-powder text-zinc-400 p-2 mb-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
         <input
           type="password"
