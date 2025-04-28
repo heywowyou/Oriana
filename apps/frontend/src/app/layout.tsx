@@ -21,7 +21,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${roboto.variable} font-sans bg-powder`}>
+      <body
+        className={`${roboto.variable} font-sans bg-gradient-to-t from-powder to-ashe`}
+      >
         <AuthProvider>
           <InnerLayout>{children}</InnerLayout>
         </AuthProvider>
