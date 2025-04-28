@@ -30,7 +30,7 @@ export default function WatchedElement({
     : "";
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center w-[160px]">
       {/* Image */}
       <div className="relative w-full aspect-[2/3] rounded-lg overflow-hidden group">
         <img

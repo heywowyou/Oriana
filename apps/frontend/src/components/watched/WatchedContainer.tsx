@@ -104,8 +104,8 @@ export default function WatchedContainer() {
       )}
 
       {/* Main content */}
-      <div className="rounded-lg min-h-screen mt-10 p-6">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+      <div className="flex justify-center bg-powder rounded-lg mt-10 p-6">
+        <div className="flex flex-wrap gap-6 w-full p-6 pb-60">
           {elements.map((element: any) => (
             <WatchedElement
               key={element._id}
