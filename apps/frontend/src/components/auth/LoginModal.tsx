@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { loginUser } from "@/services/authService";
+import { syncUser } from "@/services/authService";
+import { signInWithEmailAndPassword, getAuth } from "firebase/auth";
 
 interface LoginModalProps {
   onSwitch: () => void;
@@ -19,7 +20,23 @@ const LoginModal = ({ onSwitch }: LoginModalProps) => {
     setLoading(true);
     setError("");
     try {
-      const idToken = await loginUser(email, password);
+      const auth = getAuth();
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      if (!user) {
+        throw new Error("No user returned from sign in.");
+      }
+
+      // Sync the user with your MongoDB backend
+      await syncUser(user);
+
+      // Get ID token to continue your normal flow
+      const idToken = await user.getIdToken();
       login(idToken);
     } catch (err) {
       console.error(err);

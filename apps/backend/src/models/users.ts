@@ -2,9 +2,10 @@ import mongoose, { Schema } from "mongoose";
 
 const userSchema = new Schema(
   {
-    firebaseUid: { type: String, required: true, unique: true },
+    firebaseUID: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true, trim: true },
-    username: { type: String, required: true, trim: true },
+    displayName: { type: String, trim: true },
+    photoURL: { type: String, trim: true },
   },
   { timestamps: true }
 );

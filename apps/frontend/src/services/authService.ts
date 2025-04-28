@@ -1,9 +1,11 @@
 import {
   getAuth,
+  getIdToken,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
 } from "firebase/auth";
 import { app } from "@/lib/firebase";
+import axios from "axios";
 
 const auth = getAuth(app);
 
@@ -31,4 +33,22 @@ export const registerUser = async (
   );
   const token = await userCredential.user.getIdToken();
   return token;
+};
+
+export const syncUser = async (user: any) => {
+  const auth = getAuth();
+  const token = await getIdToken(auth.currentUser!);
+
+  await axios.post(
+    "http://localhost:4000/users/sync",
+    {
+      firebaseUID: user.uid,
+      email: user.email,
+      displayName: user.displayName,
+      photoURL: user.photoURL,
+    },
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
 };
