@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { registerUser } from "@/services/authService";
+import { syncUser } from "@/services/authService";
+import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 
 interface RegisterModalProps {
   onSwitch: () => void;
@@ -19,7 +20,23 @@ const RegisterModal = ({ onSwitch }: RegisterModalProps) => {
     setLoading(true);
     setError("");
     try {
-      const idToken = await registerUser(email, password);
+      const auth = getAuth();
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      if (!user) {
+        throw new Error("No user returned from registration.");
+      }
+
+      // Sync the user with your MongoDB backend
+      await syncUser(user);
+
+      // Get ID token to continue your normal flow
+      const idToken = await user.getIdToken();
       login(idToken);
     } catch (err) {
       console.error(err);
