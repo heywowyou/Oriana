@@ -1,0 +1,10 @@
+{
+  "projects": {
+    "frontend": {
+      "rootDirectory": "apps/frontend"
+    }
+  },
+  "buildCommand": "yarn build:frontend",
+  "outputDirectory": "apps/frontend/.next",
+  "ignoreCommand": "echo 'No ignored files'"
+}
