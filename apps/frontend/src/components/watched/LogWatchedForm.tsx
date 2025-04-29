@@ -21,7 +21,7 @@ export default function LogWatchedForm({ onNew }: { onNew: () => void }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await fetch("http://localhost:4000/watched", {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/watched`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

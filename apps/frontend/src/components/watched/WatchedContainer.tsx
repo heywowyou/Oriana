@@ -15,7 +15,7 @@ export default function WatchedContainer() {
   const { idToken } = useAuth();
 
   const fetchWatched = async () => {
-    const res = await fetch(`http://localhost:4000/watched/me`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/watched/me`, {
       headers: {
         Authorization: `Bearer ${idToken}`,
       },

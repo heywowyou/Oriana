@@ -43,7 +43,7 @@ export default function EditWatchedForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await fetch(`http://localhost:4000/watched/${element._id}`, {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/watched/${element._id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
