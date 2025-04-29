@@ -11,10 +11,11 @@ build/
 # Environment files
 .env
 .env.local
+.env.*
 .env.*.local
 
 # Firebase Admin private key
-service-account.json
+apps/backend/service-account.json
 
 # Logs
 logs
@@ -22,6 +23,7 @@ logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.pnpm-debug.log*
 
 # OS-specific files
 .DS_Store
@@ -38,14 +40,26 @@ Thumbs.db
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+yarn.lock
 
-# Electron outputs
+# Electron outputs (for the future)
 apps/desktop/*.asar
 apps/desktop/release-builds/
 apps/desktop/*.dmg
 apps/desktop/*.exe
 apps/desktop/*.zip
 
-# Others
+# Test files
 coverage/
+test-api.rest
+
+# Misc
+.eslintcache
+*.tsbuildinfo
+next-env.d.ts
+
+# Vercel
+.vercel
+
+# CORS file (specific to your project)
 cors.json
