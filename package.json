@@ -7,9 +7,9 @@
     "apps/backend"
   ],
   "scripts": {
-    "dev:frontend": "next dev apps/frontend",
-    "build:frontend": "next build apps/frontend",
-    "start:frontend": "next start apps/frontend",
+    "dev:frontend": "cd apps/frontend && yarn dev",
+    "build:frontend": "cd apps/frontend && yarn build",
+    "start:frontend": "cd apps/frontend && yarn start",
     "dev:backend": "dotenv -e apps/backend/.env -- nodemon apps/backend/src/index.ts",
     "build:backend": "tsc -p apps/backend",
     "start:backend": "node apps/backend/dist/index.js",
