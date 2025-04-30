@@ -128,7 +128,7 @@ export default function WatchedContainer() {
           )
             .sort((a, b) => parseInt(b[0]) - parseInt(a[0]))
             .map(([year, group]) => (
-              <section key={year} className="bg-powder rounded-l px-2 py-2">
+              <section key={year} className="bg-powder rounded-xl px-2 py-2">
                 <div className="flex flex-wrap gap-6 justify-center w-full px-6 py-6">
                   {group.map((element) => (
                     <WatchedElement
