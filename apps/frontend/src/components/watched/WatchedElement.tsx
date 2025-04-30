@@ -46,7 +46,7 @@ export default function WatchedElement({
             onClick={() =>
               onEdit({ _id, title, cover, rating, type, favorite })
             }
-            className="absolute top-2 right-2 bg-powder text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition"
+            className="absolute top-2 right-2 bg-powder text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 hover:scale-110 ease-in duration-200"
             aria-label="Edit"
           >
             <Pen className="w-4 h-4" />
