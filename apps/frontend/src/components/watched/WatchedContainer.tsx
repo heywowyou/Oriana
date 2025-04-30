@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import WatchedElement from "./WatchedElement";
 import LogWatchedForm from "./LogWatchedForm";
 import EditWatchedForm from "./EditWatchedForm";
-import { X } from "lucide-react";
+import { X, Plus } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 export default function WatchedContainer() {
@@ -105,7 +105,21 @@ export default function WatchedContainer() {
 
       {/* Main content */}
       <div className="flex justify-center mt-10">
-        <div className="flex flex-col gap-10 w-full max-w-[1200px] pb-60">
+        <div className="relative flex flex-col gap-10 w-full max-w-[1200px] pb-60">
+          {/* Button to open Create modal */}
+          <div className="absolute top-0 -right-20 z-40 hover:scale-110 ease-in-out duration-200">
+            <button
+              onClick={() => {
+                setShowModal(true);
+                setEditingElement(null);
+              }}
+              className="w-10 h-10 flex items-center justify-center bg-powder hover:bg-sky-600 text-white rounded-lg shadow-lg ease-in-out duration-200"
+              aria-label="Add new"
+            >
+              <Plus className="w-6 h-6" />
+            </button>
+          </div>
+
           {Object.entries(
             elements
               .sort((a: any, b: any) => {
@@ -141,19 +155,6 @@ export default function WatchedContainer() {
               </section>
             ))}
         </div>
-      </div>
-
-      {/* Button to open Create modal */}
-      <div className="fixed top-28 right-8 z-40">
-        <button
-          onClick={() => {
-            setShowModal(true);
-            setEditingElement(null);
-          }}
-          className="w-12 h-12 bg-blue-600 hover:bg-blue-500 text-white rounded-lg shadow-lg transition"
-        >
-          +
-        </button>
       </div>
     </>
   );

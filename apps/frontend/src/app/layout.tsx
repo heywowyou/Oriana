@@ -22,7 +22,6 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <body
-        /* ⚙️  bg-fixed keeps the gradient present while scrolling  */
         className={`${roboto.variable} font-sans bg-gradient-to-t from-powder to-ashe bg-fixed min-h-screen flex flex-col`}
       >
         <AuthProvider>
@@ -59,7 +58,6 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    /* ⚙️  Wrapper stretches to full height so the gradient covers all content */
     <div className="flex flex-col min-h-screen">
       <Header />
       <div className="flex justify-center mt-6 flex-grow">
