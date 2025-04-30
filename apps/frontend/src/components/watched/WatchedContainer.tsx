@@ -130,19 +130,16 @@ export default function WatchedContainer() {
             .map(([year, group]) => (
               <section
                 key={year}
-                className="bg-powder rounded-lg shadow-inner px-6 py-6"
+                className="bg-powder rounded-lg shadow-inner px-2 py-2"
               >
-                <h2 className="text-2xl text-white mb-4">{year}</h2>
-                <div className="flex justify-center max-w-[1200px]">
-                  <div className="flex flex-wrap gap-6 w-full p-6">
-                    {group.map((element) => (
-                      <WatchedElement
-                        key={element._id}
-                        {...element}
-                        onEdit={handleEdit}
-                      />
-                    ))}
-                  </div>
+                <div className="flex flex-wrap gap-6 justify-start w-full px-10 py-10">
+                  {group.map((element) => (
+                    <WatchedElement
+                      key={element._id}
+                      {...element}
+                      onEdit={handleEdit}
+                    />
+                  ))}
                 </div>
               </section>
             ))}

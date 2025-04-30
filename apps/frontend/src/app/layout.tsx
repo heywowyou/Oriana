@@ -22,7 +22,8 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <body
-        className={`${roboto.variable} font-sans bg-gradient-to-t from-powder to-ashe h-full`}
+        /* ⚙️  bg-fixed keeps the gradient present while scrolling  */
+        className={`${roboto.variable} font-sans bg-gradient-to-t from-powder to-ashe bg-fixed min-h-screen flex flex-col`}
       >
         <AuthProvider>
           <InnerLayout>{children}</InnerLayout>
@@ -39,7 +40,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <p>Loading...</p>{" "}
+        <p>Loading...</p>
       </div>
     );
   }
@@ -58,13 +59,14 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <>
+    /* ⚙️  Wrapper stretches to full height so the gradient covers all content */
+    <div className="flex flex-col min-h-screen">
       <Header />
-      <div className="flex justify-center mt-6">
+      <div className="flex justify-center mt-6 flex-grow">
         <aside className="w-1/6 hidden lg:block" />
         <main className="w-4/6 max-w-[1200px]">{children}</main>
         <aside className="w-1/6 hidden lg:block" />
       </div>
-    </>
+    </div>
   );
 }

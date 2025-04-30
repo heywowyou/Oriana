@@ -1,4 +1,4 @@
-import { Star, Heart } from "lucide-react";
+import { Star, Heart, Pen } from "lucide-react";
 
 type WatchedElementProps = {
   _id: string;
@@ -32,22 +32,24 @@ export default function WatchedElement({
   return (
     <div className="flex flex-col items-center w-[160px]">
       {/* Image */}
-      <div className="relative w-full aspect-[2/3] rounded-lg overflow-hidden group">
-        <img
-          src={cover || "/placeholder.jpg"}
-          alt={title}
-          className="w-full h-full object-cover transition duration-200"
-        />
-
-        {/* Edit button (appears on hover only if onEdit is provided) */}
+      <div className="relative w-full aspect-[2/3] shadow-lg group">
+        <div className="absolute inset-0 rounded-lg overflow-visible">
+          <img
+            src={cover || "/placeholder.jpg"}
+            alt={title}
+            className="w-full h-full rounded-lg object-cover"
+          />
+        </div>
+        {/* Edit button */}
         {onEdit && (
           <button
             onClick={() =>
               onEdit({ _id, title, cover, rating, type, favorite })
             }
-            className="absolute top-2 right-2 bg-blue-600 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition"
+            className="absolute top-2 right-2 bg-powder text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition"
+            aria-label="Edit"
           >
-            Edit
+            <Pen className="w-4 h-4" />
           </button>
         )}
       </div>
@@ -60,7 +62,7 @@ export default function WatchedElement({
               key={i}
               className={`w-4 h-4 ${
                 rating && rating >= i
-                  ? "text-zinc-400 fill-zinc-400"
+                  ? "text-sky-300 fill-sky-300"
                   : "text-zinc-800 fill-zinc-800"
               }`}
             />
@@ -71,7 +73,9 @@ export default function WatchedElement({
         </div>
 
         {/* Date watched */}
-        <div className="text-sm text-light">{formattedDate}</div>
+        <div className="text-sm text-light text-neutral-400">
+          {formattedDate}
+        </div>
       </div>
     </div>
   );
