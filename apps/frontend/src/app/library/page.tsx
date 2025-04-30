@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function LibraryPage() {
   return (
-    <main className="p-6">
+    <main>
       <h1 className="text-3xl font-bold mb-4">Your Library</h1>
       <div className="grid grid-cols-2 gap-4 max-w-sm">
         <Link

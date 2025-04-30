@@ -20,9 +20,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className="h-full">
       <body
-        className={`${roboto.variable} font-sans bg-gradient-to-t from-powder to-ashe`}
+        className={`${roboto.variable} font-sans bg-gradient-to-t from-powder to-ashe h-full`}
       >
         <AuthProvider>
           <InnerLayout>{children}</InnerLayout>
