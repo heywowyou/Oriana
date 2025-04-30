@@ -104,15 +104,48 @@ export default function WatchedContainer() {
       )}
 
       {/* Main content */}
-      <div className="flex justify-center bg-powder rounded-lg mt-10 p-6">
-        <div className="flex flex-wrap gap-6 w-full p-6 pb-60">
-          {elements.map((element: any) => (
-            <WatchedElement
-              key={element._id}
-              {...element}
-              onEdit={handleEdit}
-            />
-          ))}
+      <div className="flex justify-center mt-10">
+        <div className="flex flex-col gap-10 w-full max-w-[1200px] pb-60">
+          {Object.entries(
+            elements
+              .sort((a: any, b: any) => {
+                const dateA = a.dateWatched
+                  ? new Date(a.dateWatched).getTime()
+                  : 0;
+                const dateB = b.dateWatched
+                  ? new Date(b.dateWatched).getTime()
+                  : 0;
+                return dateB - dateA;
+              })
+              .reduce((acc: Record<string, any[]>, element: any) => {
+                const year = element.dateWatched
+                  ? new Date(element.dateWatched).getFullYear().toString()
+                  : "Unknown";
+                if (!acc[year]) acc[year] = [];
+                acc[year].push(element);
+                return acc;
+              }, {})
+          )
+            .sort((a, b) => parseInt(b[0]) - parseInt(a[0]))
+            .map(([year, group]) => (
+              <section
+                key={year}
+                className="bg-powder rounded-lg shadow-inner px-6 py-6"
+              >
+                <h2 className="text-2xl text-white mb-4">{year}</h2>
+                <div className="flex justify-center max-w-[1200px]">
+                  <div className="flex flex-wrap gap-6 w-full p-6">
+                    {group.map((element) => (
+                      <WatchedElement
+                        key={element._id}
+                        {...element}
+                        onEdit={handleEdit}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </section>
+            ))}
         </div>
       </div>
 
