@@ -30,7 +30,7 @@ export default function WatchedElement({
     : "";
 
   return (
-    <div className="flex flex-col items-center w-[160px]">
+    <div className="flex flex-col items-center w-[140px]">
       {/* Image */}
       <div className="relative w-full aspect-[2/3] shadow-lg group">
         <div className="absolute inset-0 rounded-lg overflow-visible">
@@ -54,13 +54,13 @@ export default function WatchedElement({
         )}
       </div>
 
-      <div className="flex items-center justify-between w-full mt-2 text-gray-400">
+      <div className="flex items-center justify-between w-full mt-2">
         {/* Stars and Heart */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5">
           {[1, 2, 3, 4, 5].map((i) => (
             <Star
               key={i}
-              className={`w-4 h-4 ${
+              className={`w-3.5 h-6.5 ${
                 rating && rating >= i
                   ? "text-sky-300 fill-sky-300"
                   : "text-zinc-800 fill-zinc-800"
@@ -73,7 +73,7 @@ export default function WatchedElement({
         </div>
 
         {/* Date watched */}
-        <div className="text-sm text-light text-neutral-400">
+        <div className="text-xs text-light text-neutral-400">
           {formattedDate}
         </div>
       </div>
