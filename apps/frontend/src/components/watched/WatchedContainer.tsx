@@ -8,8 +8,18 @@ import ViewWatchedModal from "./ViewWatchedModal";
 import { X, Plus, Film, Tv, SquareLibrary } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
+type WatchedElementType = {
+  _id: string;
+  title: string;
+  cover?: string;
+  rating?: number;
+  type: "movie" | "show" | "anime";
+  favorite?: boolean;
+  dateWatched?: string;
+};
+
 export default function WatchedContainer() {
-  const [elements, setElements] = useState([]);
+  const [elements, setElements] = useState<WatchedElementType[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [editingElement, setEditingElement] = useState<any>(null);
   const [selectedElement, setSelectedElement] = useState<any>(null);
@@ -78,19 +88,32 @@ export default function WatchedContainer() {
   };
 
   const handleToggleFavorite = async (id: string, newStatus: boolean) => {
-    try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/watched/${id}/favorite`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${idToken}`,
-        },
-        body: JSON.stringify({ favorite: newStatus }),
-      });
+    // Optimistic UI update
+    setElements((prev) =>
+      prev.map((el) => (el._id === id ? { ...el, favorite: newStatus } : el))
+    );
 
-      fetchWatched(); // refresh
-    } catch (err) {
-      console.error("Failed to toggle favorite:", err);
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/watched/${id}/favorite`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${idToken}`,
+          },
+          body: JSON.stringify({ favorite: newStatus }),
+        }
+      );
+
+      if (!res.ok) throw new Error("Request failed");
+    } catch (error) {
+      console.error("Failed to update favorite. Reverting...", error);
+
+      // Revert the change if it failed
+      setElements((prev) =>
+        prev.map((el) => (el._id === id ? { ...el, favorite: !newStatus } : el))
+      );
     }
   };
 
