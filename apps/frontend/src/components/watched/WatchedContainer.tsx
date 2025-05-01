@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import WatchedElement from "./WatchedElement";
 import LogWatchedForm from "./LogWatchedForm";
 import EditWatchedForm from "./EditWatchedForm";
+import ViewWatchedModal from "./ViewWatchedModal";
 import { X, Plus, Film, Tv, SquareLibrary } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
@@ -11,6 +12,7 @@ export default function WatchedContainer() {
   const [elements, setElements] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editingElement, setEditingElement] = useState<any>(null);
+  const [selectedElement, setSelectedElement] = useState<any>(null);
   const modalRef = useRef<HTMLDivElement | null>(null);
   const { idToken } = useAuth();
 
@@ -49,6 +51,7 @@ export default function WatchedContainer() {
       if (e.key === "Escape") {
         setShowModal(false);
         setEditingElement(null);
+        setSelectedElement(null);
       }
     };
     document.addEventListener("keydown", handleEsc);
@@ -59,17 +62,14 @@ export default function WatchedContainer() {
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
       setShowModal(false);
       setEditingElement(null);
+      setSelectedElement(null);
     }
   };
 
   useEffect(() => {
-    if (showModal) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
+    document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [showModal]);
+  }, []);
 
   const handleEdit = (element: any) => {
     setEditingElement(element);
@@ -78,14 +78,13 @@ export default function WatchedContainer() {
 
   return (
     <>
-      {/* Modal */}
+      {/* Create/Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur flex items-center justify-center z-50">
           <div
             ref={modalRef}
             className="relative bg-powder rounded-lg shadow-lg p-6 w-full max-w-md"
           >
-            {/* Close Button */}
             <button
               onClick={() => {
                 setShowModal(false);
@@ -118,6 +117,15 @@ export default function WatchedContainer() {
         </div>
       )}
 
+      {/* View Modal */}
+      {selectedElement && (
+        <ViewWatchedModal
+          element={selectedElement}
+          onClose={() => setSelectedElement(null)}
+          modalRef={modalRef}
+        />
+      )}
+
       {/* Main content */}
       <div className="flex justify-center mt-10">
         <div className="relative flex flex-col gap-10 w-full max-w-[1200px] pb-20">
@@ -146,24 +154,15 @@ export default function WatchedContainer() {
                 This year: <span className="text-white">{thisYear}</span>
               </div>
               <div className="flex justify-between gap-6">
-                <div
-                  className="flex flex-col items-center gap-1 hover:text-sky-400 ease-in-out duration-200"
-                  aria-label="Number of movies watched"
-                >
+                <div className="flex flex-col items-center gap-1 hover:text-sky-400 ease-in-out duration-200">
                   <Film className="w-6 h-6" />
                   <span className="text-white">{countByType.movie || 0}</span>
                 </div>
-                <div
-                  className="flex flex-col items-center gap-1 hover:text-sky-400 ease-in-out duration-200"
-                  aria-label="Number of shows watched"
-                >
+                <div className="flex flex-col items-center gap-1 hover:text-sky-400 ease-in-out duration-200">
                   <Tv className="w-6 h-6" />
                   <span className="text-white">{countByType.show || 0}</span>
                 </div>
-                <div
-                  className="flex flex-col items-center gap-1 hover:text-sky-400 ease-in-out duration-200"
-                  aria-label="Number of anime watched"
-                >
+                <div className="flex flex-col items-center gap-1 hover:text-sky-400 ease-in-out duration-200">
                   <SquareLibrary className="w-6 h-6" />
                   <span className="text-white">{countByType.anime || 0}</span>
                 </div>
@@ -201,6 +200,7 @@ export default function WatchedContainer() {
                       key={element._id}
                       {...element}
                       onEdit={handleEdit}
+                      onClick={setSelectedElement}
                     />
                   ))}
                 </div>

@@ -9,6 +9,7 @@ type WatchedElementProps = {
   favorite?: boolean;
   dateWatched?: string;
   onEdit?: (element: WatchedElementProps) => void;
+  onClick?: (element: WatchedElementProps) => void;
 };
 
 export default function WatchedElement({
@@ -20,6 +21,7 @@ export default function WatchedElement({
   favorite,
   dateWatched,
   onEdit,
+  onClick,
 }: WatchedElementProps) {
   // Format date
   const formattedDate = dateWatched
@@ -30,7 +32,12 @@ export default function WatchedElement({
     : "";
 
   return (
-    <div className="flex flex-col items-center w-[160px] gap-3">
+    <div
+      className="flex flex-col items-center w-[160px] gap-3 cursor-pointer"
+      onClick={() =>
+        onClick?.({ _id, title, cover, rating, type, favorite, dateWatched })
+      }
+    >
       {/* Image */}
       <div className="relative w-full aspect-[2/3] shadow-lg group">
         <div className="absolute inset-0 rounded-lg overflow-visible group-hover:scale-105 ease-in-out duration-200">
@@ -43,9 +50,18 @@ export default function WatchedElement({
         {/* Edit button */}
         {onEdit && (
           <button
-            onClick={() =>
-              onEdit({ _id, title, cover, rating, type, favorite, dateWatched })
-            }
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit?.({
+                _id,
+                title,
+                cover,
+                rating,
+                type,
+                favorite,
+                dateWatched,
+              });
+            }}
             className="absolute top-2 right-2 bg-powder text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 ease-in-out duration-200"
             aria-label="Edit"
           >
