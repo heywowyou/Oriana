@@ -14,6 +14,21 @@ export default function WatchedContainer() {
   const modalRef = useRef<HTMLDivElement | null>(null);
   const { idToken } = useAuth();
 
+  const currentYear = new Date().getFullYear();
+
+  const total = elements.length;
+  const thisYear = elements.filter((el: any) =>
+    el.dateWatched?.startsWith(currentYear.toString())
+  ).length;
+
+  const countByType = elements.reduce(
+    (acc: Record<string, number>, el: any) => {
+      acc[el.type] = (acc[el.type] || 0) + 1;
+      return acc;
+    },
+    {}
+  );
+
   const fetchWatched = async () => {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/watched/me`, {
       headers: {
@@ -106,7 +121,7 @@ export default function WatchedContainer() {
       {/* Main content */}
       <div className="flex justify-center mt-10">
         <div className="relative flex flex-col gap-10 w-full max-w-[1200px] pb-60">
-          {/* Button to open Create modal */}
+          {/* Create Button */}
           <div className="absolute top-0 -right-20 z-40 hover:scale-110 ease-in-out duration-200">
             <button
               onClick={() => {
@@ -120,6 +135,34 @@ export default function WatchedContainer() {
             </button>
           </div>
 
+          {/* Stats Panel */}
+          <div className="absolute top-0 -left-64 z-40">
+            <div className="w-48 bg-powder text-zinc-400 text-sm rounded-lg shadow px-4 py-4">
+              <p className="font-medium text-white mb-2">Stats</p>
+              <ul className="space-y-1">
+                <li>
+                  Total: <span className="text-white">{total}</span>
+                </li>
+                <li>
+                  This year: <span className="text-white">{thisYear}</span>
+                </li>
+                <li>
+                  Movies:{" "}
+                  <span className="text-white">{countByType.movie || 0}</span>
+                </li>
+                <li>
+                  Shows:{" "}
+                  <span className="text-white">{countByType.show || 0}</span>
+                </li>
+                <li>
+                  Anime:{" "}
+                  <span className="text-white">{countByType.anime || 0}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Watched content grouped by year */}
           {Object.entries(
             elements
               .sort((a: any, b: any) => {
