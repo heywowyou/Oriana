@@ -44,7 +44,7 @@ export default function WatchedElement({
         {onEdit && (
           <button
             onClick={() =>
-              onEdit({ _id, title, cover, rating, type, favorite })
+              onEdit({ _id, title, cover, rating, type, favorite, dateWatched })
             }
             className="absolute top-2 right-2 bg-powder text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 hover:scale-110 ease-in duration-200"
             aria-label="Edit"

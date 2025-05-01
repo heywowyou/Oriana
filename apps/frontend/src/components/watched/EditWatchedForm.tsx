@@ -12,6 +12,7 @@ type EditWatchedFormProps = {
     cover?: string;
     rating?: number;
     type: "movie" | "show" | "anime";
+    dateWatched?: string;
   };
   onUpdated: () => void;
 };
@@ -24,7 +25,9 @@ export default function EditWatchedForm({
   const [cover, setCover] = useState(element.cover || "");
   const [type, setType] = useState<"movie" | "show" | "anime">(element.type);
   const [rating, setRating] = useState(element.rating || 0);
-  const [dateWatched, setDateWatched] = useState("");
+  const [dateWatched, setDateWatched] = useState(
+    element.dateWatched ? element.dateWatched.slice(0, 10) : ""
+  );
   const [uploading, setUploading] = useState(false);
   const { idToken } = useAuth();
 
