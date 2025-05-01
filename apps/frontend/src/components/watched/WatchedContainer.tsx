@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import WatchedElement from "./WatchedElement";
 import LogWatchedForm from "./LogWatchedForm";
 import EditWatchedForm from "./EditWatchedForm";
-import { X, Plus } from "lucide-react";
+import { X, Plus, Film, Tv, SquareLibrary } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 export default function WatchedContainer() {
@@ -120,7 +120,7 @@ export default function WatchedContainer() {
 
       {/* Main content */}
       <div className="flex justify-center mt-10">
-        <div className="relative flex flex-col gap-10 w-full max-w-[1200px] pb-60">
+        <div className="relative flex flex-col gap-10 w-full max-w-[1200px] pb-20">
           {/* Create Button */}
           <div className="absolute top-0 -right-20 z-40 hover:scale-110 ease-in-out duration-200">
             <button
@@ -136,29 +136,38 @@ export default function WatchedContainer() {
           </div>
 
           {/* Stats Panel */}
-          <div className="absolute top-0 -left-64 z-40">
-            <div className="w-48 bg-powder text-zinc-400 text-sm rounded-lg shadow px-4 py-4">
-              <p className="font-medium text-white mb-2">Stats</p>
-              <ul className="space-y-1">
-                <li>
-                  Total: <span className="text-white">{total}</span>
-                </li>
-                <li>
-                  This year: <span className="text-white">{thisYear}</span>
-                </li>
-                <li>
-                  Movies:{" "}
+          <div className="absolute top-0 -left-60 z-40">
+            <div className="flex flex-col gap-4 bg-powder text-zinc-400 text-sm rounded-lg shadow p-6">
+              <p className="font-medium text-white">Stats</p>
+              <div>
+                Total: <span className="text-white">{total}</span>
+              </div>
+              <div>
+                This year: <span className="text-white">{thisYear}</span>
+              </div>
+              <div className="flex justify-between gap-6">
+                <div
+                  className="flex flex-col items-center gap-1"
+                  aria-label="Number of movies watched"
+                >
+                  <Film className="w-6 h-6" />
                   <span className="text-white">{countByType.movie || 0}</span>
-                </li>
-                <li>
-                  Shows:{" "}
+                </div>
+                <div
+                  className="flex flex-col items-center gap-1"
+                  aria-label="Number of shows watched"
+                >
+                  <Tv className="w-6 h-6" />
                   <span className="text-white">{countByType.show || 0}</span>
-                </li>
-                <li>
-                  Anime:{" "}
+                </div>
+                <div
+                  className="flex flex-col items-center gap-1"
+                  aria-label="Number of anime watched"
+                >
+                  <SquareLibrary className="w-6 h-6" />
                   <span className="text-white">{countByType.anime || 0}</span>
-                </li>
-              </ul>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -185,8 +194,8 @@ export default function WatchedContainer() {
           )
             .sort((a, b) => parseInt(b[0]) - parseInt(a[0]))
             .map(([year, group]) => (
-              <section key={year} className="bg-powder rounded-xl px-2 py-2">
-                <div className="flex flex-wrap gap-6 justify-center w-full px-6 py-6">
+              <section key={year} className="bg-powder rounded-xl px-6 py-10">
+                <div className="flex flex-wrap gap-6 justify-center w-full">
                   {group.map((element) => (
                     <WatchedElement
                       key={element._id}
