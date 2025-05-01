@@ -38,6 +38,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(false);
   }, []);
 
+  // RefreshIdToken function
+  const refreshIdToken = async () => {
+    const auth = getAuth(app);
+    const user = auth.currentUser;
+    if (user) {
+      const token = await user.getIdToken(true); // Force refresh
+      setIdToken(token);
+      localStorage.setItem("idToken", token);
+    }
+  };
+
+  // Auto-refresh every 5 minutes
+  useEffect(() => {
+    const interval = setInterval(
+      () => {
+        refreshIdToken();
+      },
+      5 * 60 * 1000
+    ); // 5 minutes
+
+    return () => clearInterval(interval);
+  }, []);
+
   const login = (token: string) => {
     setIdToken(token);
     localStorage.setItem("idToken", token);
@@ -46,17 +69,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     setIdToken(null);
     localStorage.removeItem("idToken");
-  };
-
-  // RefreshIdToken function
-  const refreshIdToken = async () => {
-    const auth = getAuth(app);
-    const user = auth.currentUser;
-    if (user) {
-      const token = await user.getIdToken(true); // Force refresh
-      setIdToken(token);
-      localStorage.setItem("idToken", token); // Update localStorage
-    }
   };
 
   const value = {
