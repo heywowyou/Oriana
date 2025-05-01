@@ -63,8 +63,9 @@ export default function ViewWatchedModal({
             <div className="text-zinc-400">
               Watched on{" "}
               {new Date(element.dateWatched).toLocaleDateString("en-US", {
+                weekday: "long",
                 year: "numeric",
-                month: "2-digit",
+                month: "long",
                 day: "2-digit",
               })}
             </div>

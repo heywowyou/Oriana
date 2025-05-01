@@ -17,7 +17,7 @@ export default function LibrarySection({ label, icon: Icon, href }: Props) {
     return (
       <Link
         href={href}
-        className={`${baseClasses} bg-ashe text-zinc-200 hover:ring hover:ring-sky-400 hover:shadow-xl hover:scale-105 ease-in-out duration-200`}
+        className={`${baseClasses} bg-powder text-zinc-200 hover:ring hover:ring-sky-400 hover:shadow-xl hover:scale-105 ease-in-out duration-200`}
       >
         <Icon className="w-8 h-8" />
         {label}

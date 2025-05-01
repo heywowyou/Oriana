@@ -4,6 +4,7 @@ import {
   createWatched,
   getWatchedForUser,
   updateWatched,
+  toggleFavorite,
 } from "../controllers/watchedElementController";
 import catchAsync from "../utils/catchAsync";
 
@@ -17,5 +18,8 @@ router.post("/", catchAsync(verifyToken), createWatched);
 
 // PUT /watched/:id - Update existing element data
 router.put("/:id", catchAsync(verifyToken), catchAsync(updateWatched));
+
+// PUT /watched/:id/favorite - Toggle element favorite status
+router.put("/:id/favorite", catchAsync(toggleFavorite));
 
 export default router;

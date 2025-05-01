@@ -12,11 +12,6 @@ app.use(express.json());
 app.use("/users", userRoutes);
 app.use("/watched", watchedElementRoutes);
 
-app.get("/ping", (req, res) => {
-  console.log("Received a ping request");
-  res.send("pong");
-});
-
 mongoose
   .connect(process.env.MONGO_URI!)
   .then(() => console.log("MongoDB connected"))

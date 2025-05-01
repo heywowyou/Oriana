@@ -19,6 +19,7 @@ export default function WatchedContainer() {
   const currentYear = new Date().getFullYear();
 
   const total = elements.length;
+
   const thisYear = elements.filter((el: any) =>
     el.dateWatched?.startsWith(currentYear.toString())
   ).length;
@@ -74,6 +75,23 @@ export default function WatchedContainer() {
   const handleEdit = (element: any) => {
     setEditingElement(element);
     setShowModal(true);
+  };
+
+  const handleToggleFavorite = async (id: string, newStatus: boolean) => {
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/watched/${id}/favorite`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({ favorite: newStatus }),
+      });
+
+      fetchWatched(); // refresh
+    } catch (err) {
+      console.error("Failed to toggle favorite:", err);
+    }
   };
 
   return (
@@ -201,6 +219,7 @@ export default function WatchedContainer() {
                       {...element}
                       onEdit={handleEdit}
                       onClick={setSelectedElement}
+                      onToggleFavorite={handleToggleFavorite}
                     />
                   ))}
                 </div>

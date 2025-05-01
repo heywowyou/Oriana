@@ -56,3 +56,32 @@ export const updateWatched = async (req: Request, res: Response) => {
 
   res.status(200).json(watchedElement);
 };
+
+// Toggle element favorite status
+export const toggleFavorite = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { favorite } = req.body;
+
+  if (typeof favorite !== "boolean") {
+    return res
+      .status(400)
+      .json({ error: "Missing or invalid 'favorite' value." });
+  }
+
+  try {
+    const updated = await WatchedElement.findByIdAndUpdate(
+      id,
+      { favorite },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ error: "Watched element not found." });
+    }
+
+    return res.status(200).json(updated);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to update favorite status." });
+  }
+};

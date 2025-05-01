@@ -10,6 +10,7 @@ type WatchedElementProps = {
   dateWatched?: string;
   onEdit?: (element: WatchedElementProps) => void;
   onClick?: (element: WatchedElementProps) => void;
+  onToggleFavorite?: (id: string, newStatus: boolean) => void;
 };
 
 export default function WatchedElement({
@@ -22,8 +23,8 @@ export default function WatchedElement({
   dateWatched,
   onEdit,
   onClick,
+  onToggleFavorite,
 }: WatchedElementProps) {
-  // Format date
   const formattedDate = dateWatched
     ? new Date(dateWatched).toLocaleDateString("en-US", {
         month: "short",
@@ -47,6 +48,7 @@ export default function WatchedElement({
             className="w-full h-full rounded-lg object-cover"
           />
         </div>
+
         {/* Edit button */}
         {onEdit && (
           <button
@@ -71,7 +73,7 @@ export default function WatchedElement({
       </div>
 
       <div className="flex items-center justify-between w-full">
-        {/* Stars and Heart */}
+        {/* Stars + Favorite */}
         <div className="flex items-center gap-0.5">
           {[1, 2, 3, 4, 5].map((i) => (
             <Star
@@ -85,7 +87,20 @@ export default function WatchedElement({
           ))}
 
           {/* Favorite Heart */}
-          {favorite && <Heart className="w-4 h-4 text-red-500 fill-red-500" />}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleFavorite?.(_id, !favorite);
+            }}
+            className="ml-1"
+            aria-label="Toggle favorite"
+          >
+            <Heart
+              className={`w-4 h-4 transition ${
+                favorite ? "text-red-500 fill-red-500" : "text-zinc-400"
+              }`}
+            />
+          </button>
         </div>
 
         {/* Date watched */}
