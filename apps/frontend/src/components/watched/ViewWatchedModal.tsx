@@ -45,7 +45,7 @@ export default function ViewWatchedModal({
         </div>
 
         <div className="w-1/2 p-6 flex flex-col gap-6 text-zinc-200">
-          <h2 className="text-2xl font-bold">{element.title}</h2>
+          <h2 className="text-2xl font-bold mr-6">{element.title}</h2>
 
           <div className="flex items-center gap-1">
             {[1, 2, 3, 4, 5].map((i) => (
@@ -54,7 +54,7 @@ export default function ViewWatchedModal({
                 className={`w-5 h-5 ${
                   rating >= i
                     ? "text-sky-400 fill-sky-400"
-                    : "text-zinc-600 fill-zinc-800"
+                    : "text-zinc-800 fill-powder"
                 }`}
               />
             ))}
