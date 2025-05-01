@@ -60,10 +60,10 @@ export default function WatchedElement({
           {[1, 2, 3, 4, 5].map((i) => (
             <Star
               key={i}
-              className={`w-3.5 h-6.5 ${
+              className={`w-4 h-4 ${
                 rating && rating >= i
-                  ? "text-sky-300 fill-sky-300"
-                  : "text-zinc-800 fill-zinc-800"
+                  ? "text-sky-400 fill-sky-400"
+                  : "text-zinc-800 fill-powder"
               }`}
             />
           ))}

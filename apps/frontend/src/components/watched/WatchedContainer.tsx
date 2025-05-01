@@ -76,7 +76,7 @@ export default function WatchedContainer() {
                 setShowModal(false);
                 setEditingElement(null);
               }}
-              className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
+              className="absolute top-3 right-3 text-zinc-600 hover:text-sky-400 ease-in-out duration-200"
               aria-label="Close"
             >
               <X className="w-5 h-5" />
@@ -113,7 +113,7 @@ export default function WatchedContainer() {
                 setShowModal(true);
                 setEditingElement(null);
               }}
-              className="w-10 h-10 flex items-center justify-center bg-powder hover:bg-sky-600 text-white rounded-lg shadow-lg ease-in-out duration-200"
+              className="w-10 h-10 flex items-center justify-center bg-powder hover:bg-sky-400 hover:text-powder text-white rounded-lg shadow-lg ease-in-out duration-200"
               aria-label="Add new"
             >
               <Plus className="w-6 h-6" />

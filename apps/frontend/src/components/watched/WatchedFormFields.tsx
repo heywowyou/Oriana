@@ -82,7 +82,7 @@ export default function WatchedFormFields({
               key={star}
               type="button"
               onClick={() => setRating(star)}
-              className="text-neutral-800 hover:scale-110 ease-in-out duration-100"
+              className="text-zinc-800 hover:scale-110 ease-in-out duration-100"
             >
               <Star
                 className={`w-6 h-6 ${
