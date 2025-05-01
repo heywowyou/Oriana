@@ -51,12 +51,12 @@ export default function WatchedFormFields({
           value={cover}
           onChange={(e) => setCover(e.target.value)}
           placeholder="Paste an image URL or upload a file"
-          className="w-full bg-ashe text-zinc-400 rounded px-3 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full bg-ashe text-zinc-400 rounded px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-sky-400"
         />
-        <div className="flex items-center gap-2">
+        <div className="flex items-center">
           <label
             htmlFor="cover-upload"
-            className="px-4 py-2 border border-2 border-sky-400 hover:scale-105 text-zinc-400 hover:text-medium shadow-lg rounded-lg cursor-pointer ease-in duration-100"
+            className="px-4 py-2 text-zinc-400 ring ring-sky-400 hover:scale-105 shadow-lg rounded-lg cursor-pointer ease-in-out duration-200"
           >
             Upload Image
           </label>
@@ -82,7 +82,7 @@ export default function WatchedFormFields({
               key={star}
               type="button"
               onClick={() => setRating(star)}
-              className="text-zinc-800 hover:scale-110 ease-in-out duration-100"
+              className="text-zinc-800 hover:scale-110 ease-in-out duration-200"
             >
               <Star
                 className={`w-6 h-6 ${
@@ -106,7 +106,7 @@ export default function WatchedFormFields({
               className={`px-4 py-2 rounded-lg hover:scale-105 ease-in-out duration-200 ${
                 type === t
                   ? "bg-sky-400 text-powder"
-                  : "text-zinc-400 border border-sky-400 border-2 hover:border-sky-400"
+                  : "text-zinc-400 ring ring-ashe hover:ring-sky-400"
               }`}
             >
               {t.charAt(0).toUpperCase() + t.slice(1)}
@@ -122,7 +122,7 @@ export default function WatchedFormFields({
           type="date"
           value={dateWatched}
           onChange={(e) => setDateWatched(e.target.value)}
-          className="w-full bg-ashe text-zinc-400 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full bg-ashe text-zinc-400 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-400"
         />
       </div>
     </>
