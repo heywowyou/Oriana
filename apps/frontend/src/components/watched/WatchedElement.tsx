@@ -33,7 +33,7 @@ export default function WatchedElement({
     <div className="flex flex-col items-center w-[160px] gap-3">
       {/* Image */}
       <div className="relative w-full aspect-[2/3] shadow-lg group">
-        <div className="absolute inset-0 rounded-lg overflow-visible hover:scale-105 ease-in-out duration-200">
+        <div className="absolute inset-0 rounded-lg overflow-visible group-hover:scale-105 ease-in-out duration-200">
           <img
             src={cover || "/placeholder.jpg"}
             alt={title}
@@ -46,7 +46,7 @@ export default function WatchedElement({
             onClick={() =>
               onEdit({ _id, title, cover, rating, type, favorite, dateWatched })
             }
-            className="absolute top-2 right-2 bg-powder text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 hover:scale-110 ease-in duration-200"
+            className="absolute top-2 right-2 bg-powder text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 ease-in-out duration-200"
             aria-label="Edit"
           >
             <Pen className="w-4 h-4" />
