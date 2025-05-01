@@ -30,10 +30,10 @@ export default function WatchedElement({
     : "";
 
   return (
-    <div className="flex flex-col items-center w-[160px]">
+    <div className="flex flex-col items-center w-[160px] gap-3">
       {/* Image */}
       <div className="relative w-full aspect-[2/3] shadow-lg group">
-        <div className="absolute inset-0 rounded-lg overflow-visible">
+        <div className="absolute inset-0 rounded-lg overflow-visible hover:scale-105 ease-in-out duration-200">
           <img
             src={cover || "/placeholder.jpg"}
             alt={title}
@@ -54,7 +54,7 @@ export default function WatchedElement({
         )}
       </div>
 
-      <div className="flex items-center justify-between w-full mt-2">
+      <div className="flex items-center justify-between w-full">
         {/* Stars and Heart */}
         <div className="flex items-center gap-0.5">
           {[1, 2, 3, 4, 5].map((i) => (

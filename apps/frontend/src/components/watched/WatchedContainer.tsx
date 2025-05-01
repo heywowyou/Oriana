@@ -147,21 +147,21 @@ export default function WatchedContainer() {
               </div>
               <div className="flex justify-between gap-6">
                 <div
-                  className="flex flex-col items-center gap-1"
+                  className="flex flex-col items-center gap-1 hover:text-sky-400 ease-in-out duration-200"
                   aria-label="Number of movies watched"
                 >
                   <Film className="w-6 h-6" />
                   <span className="text-white">{countByType.movie || 0}</span>
                 </div>
                 <div
-                  className="flex flex-col items-center gap-1"
+                  className="flex flex-col items-center gap-1 hover:text-sky-400 ease-in-out duration-200"
                   aria-label="Number of shows watched"
                 >
                   <Tv className="w-6 h-6" />
                   <span className="text-white">{countByType.show || 0}</span>
                 </div>
                 <div
-                  className="flex flex-col items-center gap-1"
+                  className="flex flex-col items-center gap-1 hover:text-sky-400 ease-in-out duration-200"
                   aria-label="Number of anime watched"
                 >
                   <SquareLibrary className="w-6 h-6" />
