@@ -1,35 +1,19 @@
-import Link from "next/link";
+"use client";
+
+import { TvMinimal, Disc3, Book, Gamepad2 } from "lucide-react";
+import LibrarySection from "@/components/library/LibrarySection";
 
 export default function LibraryPage() {
   return (
-    <main>
-      <h1 className="text-3xl font-bold mb-4">Your Library</h1>
-      <div className="grid grid-cols-2 gap-4 max-w-sm">
-        <Link
-          href="/library/watched"
-          className="bg-gray-800 text-white p-4 rounded-xl text-center hover:bg-gray-700 transition"
-        >
-          Watched
-        </Link>
-        <button
-          className="bg-gray-300 text-gray-600 p-4 rounded-xl text-center cursor-not-allowed"
-          disabled
-        >
-          Music
-        </button>
-        <button
-          className="bg-gray-300 text-gray-600 p-4 rounded-xl text-center cursor-not-allowed"
-          disabled
-        >
-          Books
-        </button>
-        <button
-          className="bg-gray-300 text-gray-600 p-4 rounded-xl text-center cursor-not-allowed"
-          disabled
-        >
-          Games
-        </button>
-      </div>
+    <main className="flex justify-center items-center h-1/2 gap-10">
+      <LibrarySection
+        label="Watched"
+        icon={TvMinimal}
+        href="/library/watched"
+      />
+      <LibrarySection label="Music" icon={Disc3} />
+      <LibrarySection label="Books" icon={Book} />
+      <LibrarySection label="Games" icon={Gamepad2} />
     </main>
   );
 }
