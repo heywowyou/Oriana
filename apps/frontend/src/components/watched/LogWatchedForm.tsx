@@ -61,49 +61,62 @@ export default function LogWatchedForm({ onNew }: { onNew: () => void }) {
     <form onSubmit={handleSubmit} className="space-y-6 caret-gray-400">
       {/* Title */}
       <div>
-        <label className="block text-sm text-gray-400 mb-1">Title</label>
+        <label className="block text-sm text-zinc-400 mb-1">Title</label>
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
-          className="w-full bg-ashe text-gray-400 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full bg-ashe text-zinc-400 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-400"
         />
       </div>
 
       {/* Cover URL and Upload */}
       <div>
-        <label className="block text-sm text-gray-400 mb-1">Cover URL</label>
+        <label className="block text-sm text-zinc-400 mb-1">Cover URL</label>
         <input
           value={cover}
           onChange={(e) => setCover(e.target.value)}
           placeholder="Paste an image URL or upload a file"
-          className="w-full bg-ashe text-gray-400 rounded px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full bg-ashe text-zinc-400 rounded px-3 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          className="block text-sm text-gray-400"
-        />
+        <div className="flex items-center gap-2">
+          <label
+            htmlFor="cover-upload"
+            className="px-4 py-2 border border-2 border-sky-400 hover:scale-105 text-zinc-400 hover:text-medium shadow-lg rounded-lg cursor-pointer ease-in duration-100"
+          >
+            Upload Image
+          </label>
+          <input
+            id="cover-upload"
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+          {uploading && (
+            <span className="text-sm text-zinc-400">Uploading...</span>
+          )}
+        </div>
+
         {uploading && (
-          <p className="text-xs text-gray-400 mt-1">Uploading...</p>
+          <p className="text-xs text-zinc-400 mt-1">Uploading...</p>
         )}
       </div>
 
       {/* Rating selection */}
       <div>
-        <label className="block text-sm text-gray-400 mb-1">Rating</label>
+        <label className="block text-sm text-zinc-400 mb-1">Rating</label>
         <div className="flex items-center gap-1">
           {[1, 2, 3, 4, 5].map((star) => (
             <button
               key={star}
               type="button"
               onClick={() => setRating(star)}
-              className="text-yellow-500"
+              className="text-neutral-800 hover:scale-110 ease-in-out duration-100"
             >
               <Star
                 className={`w-6 h-6 ${
-                  rating >= star ? "fill-yellow-500" : "fill-none"
+                  rating >= star ? "text-sky-400 fill-sky-400" : "fill-none"
                 } stroke-current`}
               />
             </button>
@@ -113,17 +126,17 @@ export default function LogWatchedForm({ onNew }: { onNew: () => void }) {
 
       {/* Type selection */}
       <div>
-        <label className="block text-sm text-gray-400 mb-1">Type</label>
+        <label className="block text-sm text-zinc-400 mb-1">Type</label>
         <div className="flex gap-3">
           {["movie", "show", "anime"].map((t) => (
             <button
               key={t}
               type="button"
               onClick={() => setType(t as "movie" | "show" | "anime")}
-              className={`px-4 py-2 rounded ${
+              className={`px-4 py-2 rounded-lg hover:scale-105 ease-in-out duration-200 ${
                 type === t
-                  ? "bg-blue-600 text-white border-blue-600"
-                  : "text-gray-400 bg-ashe hover:bg-gray-100"
+                  ? "bg-sky-400 text-powder"
+                  : "text-zinc-400 border border-sky-400 border-2 hover:border-sky-400"
               }`}
             >
               {t.charAt(0).toUpperCase() + t.slice(1)}
@@ -134,12 +147,12 @@ export default function LogWatchedForm({ onNew }: { onNew: () => void }) {
 
       {/* Date Watched selection */}
       <div>
-        <label className="block text-sm text-gray-400 mb-1">Date Watched</label>
+        <label className="block text-sm text-zinc-400 mb-1">Date Watched</label>
         <input
           type="date"
           value={dateWatched}
           onChange={(e) => setDateWatched(e.target.value)}
-          className="w-full bg-ashe text-gray-400 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full bg-ashe text-zinc-400 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
@@ -147,7 +160,7 @@ export default function LogWatchedForm({ onNew }: { onNew: () => void }) {
       <div className="text-right">
         <button
           type="submit"
-          className="px-6 py-2 rounded bg-blue-600 text-white hover:bg-blue-500"
+          className="px-6 py-2 rounded-lg bg-sky-400 text-powder hover:scale-105 ease-in-out duration-200"
         >
           Create
         </button>

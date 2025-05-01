@@ -73,9 +73,7 @@ export default function WatchedElement({
         </div>
 
         {/* Date watched */}
-        <div className="text-xs text-light text-neutral-400">
-          {formattedDate}
-        </div>
+        <div className="text-xs text-light text-zinc-400">{formattedDate}</div>
       </div>
     </div>
   );
