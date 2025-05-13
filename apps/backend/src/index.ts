@@ -2,7 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import userRoutes from "./routes/userRoutes";
-import watchedElementRoutes from "./routes/watchedElementRoutes";
+import watchedElementRoutes from "./routes/mediaItemRoutes";
 
 const app = express();
 
