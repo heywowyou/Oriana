@@ -40,7 +40,7 @@ export const syncUser = async (user: any) => {
   const token = await getIdToken(auth.currentUser!);
 
   await axios.post(
-    `${process.env.NEXT_PUBLIC_API_URL}/users/sync`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/users/sync`,
     {
       firebaseUID: user.uid,
       email: user.email,
