@@ -5,7 +5,7 @@ import {
   getWatchedForUser,
   updateWatched,
   toggleFavorite,
-} from "../controllers/watchedElementController";
+} from "../controllers/mediaItemController";
 import catchAsync from "../utils/catchAsync";
 
 const router = express.Router();
