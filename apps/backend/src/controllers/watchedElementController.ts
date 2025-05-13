@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import WatchedElement from "../models/watchedElements";
+import WatchedElement from "../models/mediaItem";
 
 // Fetch all watched elements for logged-in user
 export const getWatchedForUser = async (req: Request, res: Response) => {
