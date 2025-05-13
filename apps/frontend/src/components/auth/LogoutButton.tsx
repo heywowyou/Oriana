@@ -11,9 +11,6 @@ const LogoutButton = () => {
     setLoading(true);
     try {
       await logout();
-      // After logout, onAuthStateChanged in AuthContext will clear context state.
-      // You might want to redirect the user or update UI further here if needed.
-      // e.g., router.push('/');
       console.log("User logged out.");
     } catch (error) {
       console.error("Failed to logout:", error);

@@ -2,15 +2,13 @@ import {
   getAuth,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  User as FirebaseUser, // Import FirebaseUser type for clarity
+  User as FirebaseUser,
 } from "firebase/auth";
-import { app } from "@/lib/firebase"; // Your Firebase app instance
+import { app } from "@/lib/firebase";
 import axios from "axios";
 
 const firebaseAuth = getAuth(app); // Consistent auth instance
 
-// This function is called by your LoginModal AFTER Firebase login is successful.
-// It needs the fresh user object and its token.
 export const syncUserWithBackend = async (
   user: FirebaseUser,
   idToken: string
@@ -29,11 +27,11 @@ export const syncUserWithBackend = async (
 
   try {
     await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/sync`, // Corrected path
+      `${process.env.NEXT_PUBLIC_API_URL}/api/users/sync`,
       payload,
       {
         headers: {
-          Authorization: `Bearer ${idToken}`, // Use the fresh token passed in
+          Authorization: `Bearer ${idToken}`,
           "Content-Type": "application/json",
         },
       }
@@ -42,7 +40,6 @@ export const syncUserWithBackend = async (
   } catch (error) {
     console.error("Error syncing user with backend:", error);
     if (axios.isAxiosError(error) && error.response) {
-      // You might want to throw a more specific error or handle it
       throw new Error(
         error.response.data.message || "User sync with backend failed"
       );
@@ -50,9 +47,6 @@ export const syncUserWithBackend = async (
     throw new Error("User sync with backend failed");
   }
 };
-
-// These functions are now primarily for performing the Firebase auth operations.
-// The modals will call these, then if successful, call syncUserWithBackend.
 
 export const firebaseLoginUser = async (
   email: string,

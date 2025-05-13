@@ -6,25 +6,20 @@ import {
   useState,
   useEffect,
   ReactNode,
-  useCallback, // Added useCallback
+  useCallback,
 } from "react";
 import {
   getAuth,
   onAuthStateChanged,
   User, // Import User type
   signOut as firebaseSignOut, // Import signOut
-  // You might also need signInWithEmailAndPassword, createUserWithEmailAndPassword, etc.
-  // depending on how your LoginModal.tsx actually performs the Firebase login.
+
 } from "firebase/auth";
-import { app } from "@/lib/firebase"; // Your Firebase app instance
+import { app } from "@/lib/firebase";
 
 interface AuthContextType {
   currentUser: User | null; // Expose the Firebase User object
   idToken: string | null;
-  // login function might need to be re-thought if Firebase handles actual login
-  // For now, let's assume login in your UI triggers Firebase login, then onAuthStateChanged handles the rest.
-  // If 'login' was just for setting a token from somewhere else, its purpose changes.
-  // Let's keep a way to manually trigger token refresh if needed.
   logout: () => Promise<void>; // Make logout async
   refreshIdToken: () => Promise<string | null>; // Allow returning the new token
   isLoggedIn: boolean;
@@ -87,19 +82,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return null;
   }, [fetchAndSetIdToken]);
 
-  // Auto-refresh ID token periodically (Firebase SDK handles this automatically for current user)
-  // The user.getIdToken(true) in fetchAndSetIdToken is for explicit refresh.
-  // Firebase itself will try to keep the token fresh internally.
-  // However, if you want an explicit periodic refresh on top of Firebase's internal handling:
   useEffect(() => {
     if (currentUser) {
       // Only run interval if there's a user
       const interval = setInterval(async () => {
         console.log("Attempting periodic token refresh...");
         await refreshIdToken();
-      }, 240000); // e.g., every 4 minutes (Firebase tokens expire in 1 hr)
-      // Adjust interval as needed, but Firebase is usually good about this.
-      // 55 minutes is often suggested: 55 * 60 * 1000
+      }, 240000);
 
       return () => clearInterval(interval);
     }
@@ -110,13 +99,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     try {
       await firebaseSignOut(auth); // Sign out from Firebase
-      // onAuthStateChanged will handle setting currentUser and idToken to null
     } catch (error) {
       console.error("Error signing out:", error);
     } finally {
-      // onAuthStateChanged will set loading to false after state update
-      // If immediate UI feedback is needed, you can set idToken and currentUser to null here too,
-      // but onAuthStateChanged is the source of truth.
       setCurrentUser(null); // Explicitly clear for immediate UI update if needed
       setIdToken(null);
       localStorage.removeItem("idToken");

@@ -6,7 +6,6 @@ import {
   firebaseRegisterUser,
   syncUserWithBackend,
 } from "@/services/authService"; // Use updated service functions
-// import { useAuth } from "@/context/AuthContext"; // Likely not needed here
 
 interface RegisterModalProps {
   onSwitch: () => void;

@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { User as FirebaseUser } from "firebase/auth"; // Import FirebaseUser for type safety
 import { firebaseLoginUser, syncUserWithBackend } from "@/services/authService"; // Use updated service functions
-// You might not need useAuth here anymore unless you're accessing other context values
-// import { useAuth } from "@/context/AuthContext";
 
 interface LoginModalProps {
   onSwitch: () => void;
@@ -37,8 +35,6 @@ const LoginModal = ({ onSwitch, onLoginSuccess }: LoginModalProps) => {
       if (onLoginSuccess) {
         onLoginSuccess(); // Call success callback if provided
       }
-      // The AuthContext's onAuthStateChanged listener will automatically pick up the new user
-      // and update the global auth state (currentUser, idToken).
     } catch (err: any) {
       console.error("Login failed:", err);
       if (
