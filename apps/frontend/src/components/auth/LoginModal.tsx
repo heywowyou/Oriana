@@ -1,16 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { useAuth } from "@/context/AuthContext";
-import { syncUser } from "@/services/authService";
-import { signInWithEmailAndPassword, getAuth } from "firebase/auth";
+import { User as FirebaseUser } from "firebase/auth"; // Import FirebaseUser for type safety
+import { firebaseLoginUser, syncUserWithBackend } from "@/services/authService"; // Use updated service functions
+// You might not need useAuth here anymore unless you're accessing other context values
+// import { useAuth } from "@/context/AuthContext";
 
 interface LoginModalProps {
   onSwitch: () => void;
+  onLoginSuccess?: () => void; // Optional: To close modal or trigger other actions
 }
 
-const LoginModal = ({ onSwitch }: LoginModalProps) => {
-  const { login } = useAuth();
+const LoginModal = ({ onSwitch, onLoginSuccess }: LoginModalProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,27 +21,39 @@ const LoginModal = ({ onSwitch }: LoginModalProps) => {
     setLoading(true);
     setError("");
     try {
-      const auth = getAuth();
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
+      // Step 1: Firebase Login using the service function
+      const user: FirebaseUser = await firebaseLoginUser(email, password);
+
+      // Step 2: Get fresh ID token (Firebase Auth state is now updated)
+      // user.getIdToken(true) ensures a fresh token from Firebase servers
+      const idToken = await user.getIdToken(true);
+
+      // Step 3: Sync user with your backend using the service function
+      await syncUserWithBackend(user, idToken);
+
+      console.log(
+        "Login and sync successful. AuthContext will update via onAuthStateChanged."
       );
-      const user = userCredential.user;
-
-      if (!user) {
-        throw new Error("No user returned from sign in.");
+      if (onLoginSuccess) {
+        onLoginSuccess(); // Call success callback if provided
       }
-
-      // Sync the user with your MongoDB backend
-      await syncUser(user);
-
-      // Get ID token to continue your normal flow
-      const idToken = await user.getIdToken();
-      login(idToken);
-    } catch (err) {
-      console.error(err);
-      setError("Login failed. Check your credentials.");
+      // The AuthContext's onAuthStateChanged listener will automatically pick up the new user
+      // and update the global auth state (currentUser, idToken).
+    } catch (err: any) {
+      console.error("Login failed:", err);
+      if (
+        err.code === "auth/user-not-found" ||
+        err.code === "auth/wrong-password" ||
+        err.code === "auth/invalid-credential"
+      ) {
+        setError("Login failed. Invalid email or password.");
+      } else if (err.code === "auth/too-many-requests") {
+        setError("Too many login attempts. Please try again later.");
+      } else if (err.message && typeof err.message === "string") {
+        setError(err.message); // Display error message from syncUserWithBackend if it throws
+      } else {
+        setError("Login failed. An unexpected error occurred.");
+      }
     } finally {
       setLoading(false);
     }
@@ -56,6 +69,7 @@ const LoginModal = ({ onSwitch }: LoginModalProps) => {
           className="w-full bg-powder text-zinc-400 p-2 mb-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          aria-label="Email for login"
         />
         <input
           type="password"
@@ -63,12 +77,13 @@ const LoginModal = ({ onSwitch }: LoginModalProps) => {
           className="w-full bg-powder text-zinc-400 p-2 mb-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          aria-label="Password for login"
         />
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
         <button
           onClick={handleLogin}
           disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-500 text-white p-2 rounded mb-2"
+          className="w-full bg-blue-600 hover:bg-blue-500 text-white p-2 rounded mb-2 disabled:opacity-50"
         >
           {loading ? "Logging in..." : "Login"}
         </button>

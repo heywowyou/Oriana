@@ -1,16 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { useAuth } from "@/context/AuthContext";
-import { syncUser } from "@/services/authService";
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import { User as FirebaseUser } from "firebase/auth"; // Import FirebaseUser
+import {
+  firebaseRegisterUser,
+  syncUserWithBackend,
+} from "@/services/authService"; // Use updated service functions
+// import { useAuth } from "@/context/AuthContext"; // Likely not needed here
 
 interface RegisterModalProps {
   onSwitch: () => void;
+  onRegisterSuccess?: () => void; // Optional callback
 }
 
-const RegisterModal = ({ onSwitch }: RegisterModalProps) => {
-  const { login } = useAuth();
+const RegisterModal = ({ onSwitch, onRegisterSuccess }: RegisterModalProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,25 +23,33 @@ const RegisterModal = ({ onSwitch }: RegisterModalProps) => {
     setLoading(true);
     setError("");
     try {
-      const auth = getAuth();
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const user = userCredential.user;
+      // Step 1: Firebase Register using the service function
+      const user: FirebaseUser = await firebaseRegisterUser(email, password);
 
-      if (!user) {
-        throw new Error("No user returned from sign in.");
+      // Step 2: Get fresh ID token
+      const idToken = await user.getIdToken(true); // Force refresh
+
+      // Step 3: Sync user with your backend
+      await syncUserWithBackend(user, idToken);
+
+      console.log("Registration and sync successful. AuthContext will update.");
+      if (onRegisterSuccess) {
+        onRegisterSuccess();
       }
-
-      // Sync the user with your MongoDB backend
-      await syncUser(user);
-      const idToken = await user.getIdToken();
-      login(idToken);
-    } catch (err) {
-      console.error(err);
-      setError("Registration failed. Try another email.");
+      // AuthContext's onAuthStateChanged handles global state update
+    } catch (err: any) {
+      console.error("Registration failed:", err);
+      if (err.code === "auth/email-already-in-use") {
+        setError("This email is already registered. Try logging in.");
+      } else if (err.code === "auth/weak-password") {
+        setError(
+          "Password is too weak. Please choose a stronger password (at least 6 characters)."
+        );
+      } else if (err.message && typeof err.message === "string") {
+        setError(err.message); // Display error message from syncUserWithBackend if it throws
+      } else {
+        setError("Registration failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -54,19 +65,21 @@ const RegisterModal = ({ onSwitch }: RegisterModalProps) => {
           className="w-full bg-powder text-zinc-400 p-2 mb-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          aria-label="Email for registration"
         />
         <input
           type="password"
-          placeholder="Password"
+          placeholder="Password (min. 6 characters)"
           className="w-full bg-powder text-zinc-400 p-2 mb-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          aria-label="Password for registration"
         />
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
         <button
           onClick={handleRegister}
           disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-500 text-white p-2 rounded mb-2"
+          className="w-full bg-blue-600 hover:bg-blue-500 text-white p-2 rounded mb-2 disabled:opacity-50"
         >
           {loading ? "Registering..." : "Register"}
         </button>
