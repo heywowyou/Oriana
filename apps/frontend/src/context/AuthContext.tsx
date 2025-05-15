@@ -13,7 +13,6 @@ import {
   onAuthStateChanged,
   User, // Import User type
   signOut as firebaseSignOut, // Import signOut
-
 } from "firebase/auth";
 import { app } from "@/lib/firebase";
 
@@ -88,7 +87,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const interval = setInterval(async () => {
         console.log("Attempting periodic token refresh...");
         await refreshIdToken();
-      }, 240000);
+      }, 240000); // Interval length
 
       return () => clearInterval(interval);
     }
