@@ -1,174 +1,175 @@
+// Specify this component is a client-side component.
 "use client";
 
+// Import necessary React hooks, authentication context, and types.
 import { useState, FormEvent } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { uploadImage } from "@/lib/uploadImage"; 
+import { uploadImage } from "@/lib/uploadImage";
 import { IMediaItem, MediaType } from "@/types/media";
-import MediaFormFields from "./MediaFormFields";
+import MediaFormFields from "./MediaFormFields"; // Import shared form fields component.
 
+// Define properties for the LogItemForm component.
 interface LogItemFormProps {
-  // Callback function to execute after a new item is successfully created (e.g., to refresh list, close modal)
-  onItemCreated: () => void;
-  // The default media type for this form instance (e.g., "movie", "book").
-  // This will be used to initialize the form and tell MediaFormFields which specific fields to show.
-  defaultMediaType: MediaType;
-  // If this form is part of a category that allows choosing subtypes (e.g. "Watched" allowing movie/show/anime)
-  // pass these options here. Otherwise, currentMediaType will be fixed to defaultMediaType.
-  availableSubTypes?: MediaType[];
+  onItemCreated: () => void; // Callback function after successful item creation.
+  defaultMediaType: MediaType; // Default media type for this form instance.
+  availableSubTypes?: MediaType[]; // Optional list of subtypes if user can choose.
 }
 
+// Define the LogItemForm component.
 export default function LogItemForm({
   onItemCreated,
   defaultMediaType,
-  availableSubTypes = [], // Default to empty if no subtypes are choosable
+  availableSubTypes = [],
 }: LogItemFormProps) {
-  // Initialize formData with the defaultMediaType and other sensible defaults
+  // --- State Declarations ---
+  // Initialize form data with default values.
   const [formData, setFormDataState] = useState<Partial<IMediaItem>>({
     title: "",
     cover: "",
-    mediaType: defaultMediaType, // Pre-set the mediaType
+    mediaType: defaultMediaType, // Pre-set the mediaType from props.
     rating: 0,
-    dateConsumed: new Date().toISOString().split("T")[0], // Default to today
-    status: "completed", // Default status
+    dateConsumed: new Date().toISOString().split("T")[0], // Default to today's date.
+    status: "completed", // Default status.
     favorite: false,
     notes: "",
     tags: [],
-    // Initialize other common or specific fields to empty/default if needed
-    // e.g., for books: authors: [], pageCount: undefined
+    // Initialize other potential fields to avoid uncontrolled component warnings.
+    authors: [],
+    platforms: [],
+    developers: [],
+    musicGenre: [],
   });
+  // Manage image uploading state.
   const [uploading, setUploading] = useState(false);
+  // Access authentication token.
   const { idToken } = useAuth();
 
-  // Unified function to update any field in the formData
+  // --- Form Field Update Handler ---
+  // Update a specific field in the form data state.
   const setFormField = <K extends keyof IMediaItem>(
     fieldName: K,
     value: IMediaItem[K]
   ) => {
-    setFormDataState((prevData) => ({
-      ...prevData,
+    setFormDataState((previousData) => ({
+      ...previousData,
       [fieldName]: value,
     }));
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  // --- File Change Handler ---
+  // Handle image file selection and upload.
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
     if (file && idToken) {
-      // Ensure idToken is present for upload if needed by uploadImage
       setUploading(true);
       try {
-        // Pass idToken to uploadImage if your backend storage rules require auth
-        const url = await uploadImage(file /*, idToken */);
-        setFormField("cover", url);
+        // Upload image and get its URL.
+        const imageUrl = await uploadImage(file);
+        setFormField("cover", imageUrl); // Update cover field with the new URL.
       } catch (error) {
         console.error("Error uploading image:", error);
-        // Handle upload error (e.g., show a message to the user)
+        // Consider adding user-facing error handling here.
       } finally {
         setUploading(false);
       }
     }
   };
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  // --- Form Submission Handler ---
+  // Handle form submission to create a new media item.
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault(); // Prevent default form submission.
     if (!idToken) {
-      console.error("No auth token found. Cannot create item.");
-      // Handle error: show message to user, redirect to login, etc.
+      console.error("Authentication token not found. Cannot create item.");
+      // Consider adding user-facing error handling here.
       return;
     }
 
-    // Ensure mediaType is set (it should be by default or by user selection if availableSubTypes are used)
+    // Ensure mediaType is set, defaulting if somehow missing.
     if (!formData.mediaType) {
-      console.error("MediaType is missing in form data.");
-      // Handle this error, perhaps by setting it to defaultMediaType or showing a UI error
-      setFormField("mediaType", defaultMediaType); // Fallback, though UI should guide this
-      // return; // Or prevent submission
+      console.error("MediaType is missing. Setting to default.");
+      setFormField("mediaType", defaultMediaType);
+      // Potentially return or show an error to the user if mediaType is critical and should be explicitly set.
     }
 
-    // Filter out empty strings for optional fields if backend expects undefined/null
     const payload: Partial<IMediaItem> = { ...formData };
-    (Object.keys(payload) as Array<keyof IMediaItem>).forEach((key) => {
-      if (payload[key] === "") {
-        // For optional string fields, decide if empty string is valid or should be undefined
-        // For now, let's allow empty strings for fields like 'notes', 'cover'
-        // but for something like 'director', an empty string might not be desired if not set
-        // This depends on your backend validation and how you want to store "empty" optional text fields
-      }
-      // Convert dateConsumed to Date object if it's a string, or ensure it's in correct format for backend
-      if (
-        key === "dateConsumed" &&
-        typeof payload.dateConsumed === "string" &&
-        payload.dateConsumed
-      ) {
-        // Backend expects ISO string or will handle Date object if Mongoose schema type is Date
-        // payload.dateConsumed = new Date(payload.dateConsumed);
-      }
-      if (
-        key === "releaseDate" &&
-        typeof payload.releaseDate === "string" &&
-        payload.releaseDate
-      ) {
-        // payload.releaseDate = new Date(payload.releaseDate);
-      }
-    });
+    // Clean up payload: convert empty strings for optional fields to undefined if backend requires.
+    // This part is highly dependent on backend expectations.
+    // For now, we assume backend handles empty strings appropriately or schema defines them.
+    // Example:
+    // (Object.keys(payload) as Array<keyof IMediaItem>).forEach((key) => {
+    //   if (payload[key] === "" && (key === 'notes' || key === 'cover')) {
+    //     // Keep empty strings for these
+    //   } else if (payload[key] === "") {
+    //     delete payload[key]; // Or set to undefined
+    //   }
+    // });
 
     try {
+      // Make API request to create the new item.
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/media`, // Use the new generic endpoint
+        `${process.env.NEXT_PUBLIC_API_URL}/api/media`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${idToken}`,
           },
-          body: JSON.stringify(payload), // Send the whole formData object
+          body: JSON.stringify(payload),
         }
       );
 
+      // Handle unsuccessful API response.
       if (!response.ok) {
-        const errorData = await response
-          .json()
-          .catch(() => ({
-            message:
-              "Failed to create item. Server returned non-JSON response.",
-          }));
+        const errorData = await response.json().catch(() => ({
+          message: "Failed to create item. Server returned non-JSON response.",
+        }));
         throw new Error(errorData.message || "Failed to create item");
       }
 
-      // Reset form to initial state (or a cleared state)
+      // Reset form to initial state upon successful creation.
       setFormDataState({
         title: "",
         cover: "",
-        mediaType: defaultMediaType, // Reset to the default for this form instance
+        mediaType: defaultMediaType, // Reset to the default for this form instance.
         rating: 0,
         dateConsumed: new Date().toISOString().split("T")[0],
         status: "completed",
         favorite: false,
         notes: "",
         tags: [],
-        // Reset other fields as necessary
+        authors: [],
+        platforms: [],
+        developers: [],
+        musicGenre: [],
       });
-      onItemCreated(); // Call the callback (e.g., to refresh list and close modal)
+      // Execute callback on successful creation.
+      onItemCreated();
     } catch (error) {
       console.error("Error creating item:", error);
-      // Handle error (e.g., show error message to user)
+      // Consider adding user-facing error handling here.
     }
   };
 
+  // --- JSX Return ---
   return (
     <form onSubmit={handleSubmit} className="space-y-6 caret-gray-400">
       <MediaFormFields
         formData={formData}
         setFormData={setFormField}
-        currentMediaType={formData.mediaType || defaultMediaType} // Pass the current mediaType from state
-        availableSubTypes={availableSubTypes} // Pass subtypes if this form allows choosing
+        currentMediaType={formData.mediaType || defaultMediaType} // Use mediaType from form or default.
+        availableSubTypes={availableSubTypes} // Pass available subtypes for selection.
         uploading={uploading}
         handleFileChange={handleFileChange}
-        isEditMode={false} // This is for creating new items
+        isEditMode={false} // Indicate this form is for creating new items.
       />
       <div className="text-right">
+        {/* Submit button, disabled during upload. */}
         <button
           type="submit"
-          disabled={uploading} // Disable submit while uploading image
+          disabled={uploading}
           className="px-6 py-2 rounded-lg bg-sky-500 text-powder hover:bg-sky-400 transition-colors ease-in-out duration-200 disabled:opacity-60"
         >
           {uploading ? "Uploading..." : "Create Item"}

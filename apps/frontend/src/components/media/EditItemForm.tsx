@@ -1,52 +1,51 @@
+// Specify this component is a client-side component.
 "use client";
 
+// Import necessary React hooks, authentication context, and types.
 import { useState, FormEvent, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { uploadImage } from "@/lib/uploadImage";
 import { IMediaItem, MediaType } from "@/types/media";
-import MediaFormFields from "./MediaFormFields";
+import MediaFormFields from "./MediaFormFields"; // Import shared form fields component.
 
+// Define properties for the EditItemForm component.
 interface EditItemFormProps {
-  itemToEdit: IMediaItem;
-  // Callback function to execute after the item is successfully updated
-  onItemUpdated: () => void;
-  // If this form is part of a category that allows choosing subtypes (e.g. "Watched" allowing movie/show/anime)
-  // pass these options here. For editing, this is less common as mediaType usually doesn't change.
-  // However, if you allow changing movie to show, for instance, this would be used.
-  // For now, we assume mediaType doesn't change during edit.
-  availableSubTypes?: MediaType[];
+  itemToEdit: IMediaItem; // The media item to be edited.
+  onItemUpdated: () => void; // Callback function after successful item update.
+  availableSubTypes?: MediaType[]; // Optional list of subtypes if media type can be changed.
 }
 
+// Define the EditItemForm component.
 export default function EditItemForm({
   itemToEdit,
   onItemUpdated,
   availableSubTypes = [],
 }: EditItemFormProps) {
-  // Initialize formData with the properties of itemToEdit
+  // --- State Declarations ---
+  // Initialize form data with values from the item being edited.
   const [formData, setFormDataState] = useState<Partial<IMediaItem>>({
-    // Spread all properties from itemToEdit
     ...itemToEdit,
-    // Ensure dates are in YYYY-MM-DD format if they are date strings or Date objects
+    // Ensure date strings are in 'YYYY-MM-DD' format for input fields.
     dateConsumed: itemToEdit.dateConsumed
       ? new Date(itemToEdit.dateConsumed).toISOString().split("T")[0]
       : "",
     releaseDate: itemToEdit.releaseDate
       ? new Date(itemToEdit.releaseDate).toISOString().split("T")[0]
       : "",
-    // Tags and other array fields should be fine as they are
+    // Initialize array fields to prevent undefined errors.
     tags: itemToEdit.tags || [],
     authors: itemToEdit.authors || [],
     platforms: itemToEdit.platforms || [],
     developers: itemToEdit.developers || [],
     musicGenre: itemToEdit.musicGenre || [],
   });
-
+  // Manage image uploading state.
   const [uploading, setUploading] = useState(false);
+  // Access authentication token.
   const { idToken } = useAuth();
 
-  // Effect to update formData if itemToEdit prop changes externally
-  // This might happen if the modal is kept open and a different item is selected for edit,
-  // though typically the modal would re-mount with the new item.
+  // --- Effects ---
+  // Update form data if the 'itemToEdit' prop changes.
   useEffect(() => {
     setFormDataState({
       ...itemToEdit,
@@ -62,74 +61,82 @@ export default function EditItemForm({
       developers: itemToEdit.developers || [],
       musicGenre: itemToEdit.musicGenre || [],
     });
-  }, [itemToEdit]);
+  }, [itemToEdit]); // Rerun if itemToEdit changes.
 
-  // Unified function to update any field in the formData
+  // --- Form Field Update Handler ---
+  // Update a specific field in the form data state.
   const setFormField = <K extends keyof IMediaItem>(
     fieldName: K,
     value: IMediaItem[K]
   ) => {
-    setFormDataState((prevData) => ({
-      ...prevData,
+    setFormDataState((previousData) => ({
+      ...previousData,
       [fieldName]: value,
     }));
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  // --- File Change Handler ---
+  // Handle image file selection and upload.
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
     if (file && idToken) {
       setUploading(true);
       try {
-        const url = await uploadImage(file /*, idToken */); // Pass token if uploadImage needs it
-        setFormField("cover", url);
+        // Upload image and get its URL.
+        const imageUrl = await uploadImage(file);
+        setFormField("cover", imageUrl); // Update cover field with the new URL.
       } catch (error) {
         console.error("Error uploading image:", error);
-        // Handle upload error
+        // Consider adding user-facing error handling here.
       } finally {
         setUploading(false);
       }
     }
   };
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  // --- Form Submission Handler ---
+  // Handle form submission to update the media item.
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault(); // Prevent default form submission.
     if (!idToken || !itemToEdit._id) {
-      console.error("No auth token or item ID. Cannot update item.");
-      // Handle error
+      console.error(
+        "Authentication token or item ID is missing. Cannot update."
+      );
+      // Consider adding user-facing error handling here.
       return;
     }
 
-    // The mediaType should not be changed during an edit in this basic setup.
-    // If you want to allow changing mediaType, more complex logic is needed
-    // to handle clearing/transforming specific fields.
+    // Prepare payload for the API request.
     const payload: Partial<IMediaItem> = {
       ...formData,
-      mediaType: itemToEdit.mediaType, // Ensure original mediaType is sent
+      mediaType: itemToEdit.mediaType, // Ensure original mediaType is sent, do not allow change here.
     };
 
-    // Remove _id, user, createdAt, updatedAt, dateLogged from payload as these shouldn't be sent for update
-    // or are handled by the backend. The backend controller's getAllowedFields will also filter.
+    // Remove fields that should not be sent or are handled by the backend.
     delete payload._id;
     delete payload.user;
     delete payload.createdAt;
     delete payload.updatedAt;
-    delete (payload as any).dateLogged; // Cast to any if dateLogged is virtual and not in IMediaItem keys for Partial
-    // Or ensure IMediaItem keys allow for dateLogged if it's part of formData state.
-    // For safety, it's better if dateLogged is not part of formData state for submission.
+    // Use 'any' cast if dateLogged is not a direct key in IMediaItem for Partial.
+    delete (payload as any).dateLogged;
 
     try {
+      // Make API request to update the item.
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/media/${itemToEdit._id}`, // Use item's ID
+        `${process.env.NEXT_PUBLIC_API_URL}/api/media/${itemToEdit._id}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${idToken}`,
           },
-          body: JSON.stringify(payload), // Send the updated formData
+          body: JSON.stringify(payload),
         }
       );
 
+      // Handle unsuccessful API response.
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({
           message: "Failed to update item. Server returned non-JSON response.",
@@ -137,33 +144,34 @@ export default function EditItemForm({
         throw new Error(errorData.message || "Failed to update item");
       }
 
-      onItemUpdated(); // Call the callback (e.g., to refresh list and close modal)
+      // Execute callback on successful update.
+      onItemUpdated();
     } catch (error) {
       console.error("Error updating item:", error);
-      // Handle error (e.g., show error message to user)
+      // Consider adding user-facing error handling here.
     }
   };
 
-  // currentMediaType is fixed based on the item being edited.
+  // The media type for fields is fixed based on the item being edited.
   const currentMediaTypeForFields = itemToEdit.mediaType;
 
+  // --- JSX Return ---
   return (
     <form onSubmit={handleSubmit} className="space-y-6 caret-gray-400">
       <MediaFormFields
         formData={formData}
         setFormData={setFormField}
-        // currentMediaType is derived from the item being edited and should not change.
         currentMediaType={currentMediaTypeForFields}
-        // availableSubTypes is typically not used in edit mode if mediaType is fixed.
-        // If you allow changing movie to show, for example, you'd pass availableSubTypes here.
+        // Pass available subtypes; typically empty or not used if media type is fixed for edits.
         availableSubTypes={
           availableSubTypes.length > 0 ? availableSubTypes : []
         }
         uploading={uploading}
         handleFileChange={handleFileChange}
-        isEditMode={true} // Indicate this is an edit form
+        isEditMode={true} // Indicate this form is for editing.
       />
       <div className="text-right">
+        {/* Submit button, disabled during upload. */}
         <button
           type="submit"
           disabled={uploading}

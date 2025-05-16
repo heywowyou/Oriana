@@ -1,5 +1,7 @@
+// Specify this component is a client-side component.
 "use client";
 
+// Import necessary Lucide icons and types.
 import {
   X,
   Star,
@@ -7,7 +9,6 @@ import {
   Tag,
   Info,
   Edit,
-  Trash2,
   BookOpen,
   Gamepad2,
   Music2,
@@ -21,10 +22,10 @@ import {
   RotateCcw,
   XCircle,
 } from "lucide-react";
-import { RefObject } from "react";
+import { RefObject } from "react"; // Import RefObject for modal ref.
 import { IMediaItem, MediaType } from "@/types/media";
 
-// Define a mapping from MediaType to LucideIcon for the modal header
+// Map media types to their corresponding icons for the modal header.
 const MODAL_MEDIA_TYPE_ICONS: Partial<Record<MediaType, LucideIcon>> = {
   movie: Film,
   show: Tv,
@@ -34,10 +35,10 @@ const MODAL_MEDIA_TYPE_ICONS: Partial<Record<MediaType, LucideIcon>> = {
   music_album: Music2,
 };
 
-// Define the type for status strings explicitly from IMediaItem['status']
+// Explicitly define the type for item status based on IMediaItem.
 type DefinedItemStatus = NonNullable<IMediaItem["status"]>;
 
-// Define a mapping for status icons using the DefinedItemStatus type
+// Map item status values to their corresponding icons.
 const STATUS_ICONS: Partial<Record<DefinedItemStatus, LucideIcon>> = {
   completed: CheckCircle,
   in_progress: Clock,
@@ -46,43 +47,52 @@ const STATUS_ICONS: Partial<Record<DefinedItemStatus, LucideIcon>> = {
   dropped: XCircle,
 };
 
+// Define properties for the ViewItemModal component.
 interface ViewItemModalProps {
-  item: IMediaItem; // Receives the full IMediaItem object
-  onClose: () => void;
-  modalRef: RefObject<HTMLDivElement | null>; // For click outside to close
-  onEdit: (item: IMediaItem) => void; // Callback to trigger edit mode
-  // Add onDelete if delete button needed in the modal
+  item: IMediaItem; // The media item data to display.
+  onClose: () => void; // Callback function to close the modal.
+  modalRef: RefObject<HTMLDivElement | null>; // Ref for click-outside-to-close functionality.
+  onEdit: (item: IMediaItem) => void; // Callback to trigger edit mode for the item.
 }
 
+// Define the ViewItemModal component.
 export default function ViewItemModal({
   item,
   onClose,
   modalRef,
   onEdit,
 }: ViewItemModalProps) {
-  const rating = item.rating ?? 0;
-  const ItemIcon = MODAL_MEDIA_TYPE_ICONS[item.mediaType] || Info;
+  // --- Derived Data and Icon Selection ---
+  // Default rating to 0 if undefined.
+  const currentRating = item.rating ?? 0;
+  // Select the appropriate icon for the media type, defaulting to Info icon.
+  const ItemTypeIcon = MODAL_MEDIA_TYPE_ICONS[item.mediaType] || Info;
+  // Select the appropriate icon for the item's status, if status exists.
+  const CurrentStatusIcon = item.status ? STATUS_ICONS[item.status] : null;
 
-  const StatusIcon = item.status ? STATUS_ICONS[item.status] : null;
-
-  const formatDate = (dateInput?: string | Date): string => {
-    if (!dateInput) return "N/A";
+  // --- Helper Functions ---
+  // Format a date string or Date object for display.
+  const formatDateForDisplay = (dateInput?: string | Date): string => {
+    if (!dateInput) return "N/A"; // Return "N/A" if date is not available.
     try {
       return new Date(dateInput).toLocaleDateString("en-US", {
         year: "numeric",
         month: "long",
         day: "numeric",
       });
-    } catch (e) {
+    } catch (error) {
+      console.error("Error formatting date for display:", error);
       return "Invalid Date";
     }
   };
 
-  const renderDetail = (
+  // Render a detail row if the value is present.
+  const renderDetailRow = (
     label: string,
     value?: string | number | string[] | null,
-    Icon?: LucideIcon
+    IconComponent?: LucideIcon // Optional icon for the detail row.
   ) => {
+    // Do not render if value is undefined, null, an empty array, or an empty string.
     if (
       value === undefined ||
       value === null ||
@@ -91,24 +101,28 @@ export default function ViewItemModal({
     ) {
       return null;
     }
+    // Join array values into a comma-separated string.
     const displayValue = Array.isArray(value)
       ? value.join(", ")
-      : value.toString();
+      : String(value);
+
     return (
       <div className="flex items-start text-sm">
-        {Icon && (
-          <Icon className="w-4 h-4 mr-2 mt-0.5 text-sky-400 flex-shrink-0" />
+        {IconComponent && (
+          <IconComponent className="w-4 h-4 mr-2 mt-0.5 text-sky-400 flex-shrink-0" />
         )}
         <span className="font-semibold text-zinc-400 mr-2">{label}:</span>
-        <span className="text-zinc-200">{displayValue}</span>
+        <span className="text-zinc-200 break-words">{displayValue}</span>
       </div>
     );
   };
 
+  // --- JSX Return ---
   return (
+    // Modal backdrop and container.
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[60] p-4 overflow-y-auto">
       <div
-        ref={modalRef}
+        ref={modalRef} // Attach ref for click-outside detection.
         className="relative bg-powder text-zinc-300 rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col sm:flex-row overflow-hidden"
       >
         {/* Left Side: Cover Image */}
@@ -120,19 +134,21 @@ export default function ViewItemModal({
             }
             alt={`Cover for ${item.title}`}
             className="w-full h-full object-cover"
-            onError={(e) =>
-              (e.currentTarget.src =
+            onError={(
+              event // Fallback image.
+            ) =>
+              (event.currentTarget.src =
                 "https://placehold.co/400x600/333333/FFFFFF?text=No+Cover")
             }
           />
         </div>
 
-        {/* Right Side: Details */}
+        {/* Right Side: Item Details */}
         <div className="w-full sm:w-2/3 p-6 flex flex-col gap-3 overflow-y-auto">
-          {/* Header with Title, Type Icon, and Close Button */}
+          {/* Modal Header: Title, Type Icon, Close Button */}
           <div className="flex justify-between items-start mb-2">
             <div className="flex items-center gap-3">
-              <ItemIcon className="w-7 h-7 text-sky-400 flex-shrink-0" />
+              <ItemTypeIcon className="w-7 h-7 text-sky-400 flex-shrink-0" />
               <h2 className="text-2xl sm:text-3xl font-bold text-zinc-100 break-words mr-8">
                 {item.title}
               </h2>
@@ -146,62 +162,65 @@ export default function ViewItemModal({
             </button>
           </div>
 
-          {/* Rating */}
+          {/* Rating Stars */}
           {item.rating !== undefined && item.rating > 0 && (
             <div className="flex items-center gap-1 mb-2">
-              {[1, 2, 3, 4, 5].map((i) => (
+              {[1, 2, 3, 4, 5].map((starValue) => (
                 <Star
-                  key={i}
+                  key={starValue}
                   className={`w-5 h-5 ${
-                    rating >= i
+                    currentRating >= starValue
                       ? "text-sky-400 fill-sky-400"
                       : "text-zinc-600 fill-zinc-800/30"
                   }`}
                 />
               ))}
-              <span className="ml-2 text-sm text-zinc-400">({rating}/5)</span>
-            </div>
-          )}
-
-          {/* Status */}
-          {item.status && (
-            <div className="flex items-center text-sm mb-2">
-              {StatusIcon && (
-                <StatusIcon className="w-4 h-4 mr-2 text-sky-400 flex-shrink-0" />
-              )}
-              <span className="font-semibold text-zinc-400 mr-2">Status:</span>
-              <span className="text-zinc-200 capitalize">
-                {item.status.replace("_", " ")}
+              <span className="ml-2 text-sm text-zinc-400">
+                ({currentRating}/5)
               </span>
             </div>
           )}
 
-          {/* Common Details Section */}
+          {/* Status Information */}
+          {item.status && (
+            <div className="flex items-center text-sm mb-2">
+              {CurrentStatusIcon && (
+                <CurrentStatusIcon className="w-4 h-4 mr-2 text-sky-400 flex-shrink-0" />
+              )}
+              <span className="font-semibold text-zinc-400 mr-2">Status:</span>
+              <span className="text-zinc-200 capitalize">
+                {item.status.replace(/_/g, " ")}{" "}
+                {/* Format status string for display */}
+              </span>
+            </div>
+          )}
+
+          {/* Common Details Section (Dates, Tags) */}
           <div className="space-y-2.5 py-2 border-y border-zinc-700/50 my-2">
-            {renderDetail(
+            {renderDetailRow(
               "Consumed On",
-              formatDate(item.dateConsumed),
+              formatDateForDisplay(item.dateConsumed),
               CalendarDays
             )}
-            {renderDetail(
+            {renderDetailRow(
               "Released On",
-              formatDate(item.releaseDate),
+              formatDateForDisplay(item.releaseDate),
               CalendarDays
             )}
-            {renderDetail(
+            {renderDetailRow(
               "Logged On",
-              formatDate(item.dateLogged),
+              formatDateForDisplay(item.dateLogged),
               CalendarDays
             )}
-            {renderDetail("Tags", item.tags, Tag)}
+            {renderDetailRow("Tags", item.tags, Tag)}
           </div>
 
-          {/* Media Type Specific Details */}
+          {/* Media Type Specific Details Section */}
           <div className="space-y-2.5 py-2">
             {item.mediaType === "movie" && (
               <>
-                {renderDetail("Director", item.director)}
-                {renderDetail(
+                {renderDetailRow("Director", item.director)}
+                {renderDetailRow(
                   "Runtime",
                   item.runtimeMinutes
                     ? `${item.runtimeMinutes} mins`
@@ -211,38 +230,38 @@ export default function ViewItemModal({
             )}
             {(item.mediaType === "show" || item.mediaType === "anime") && (
               <>
-                {renderDetail("Director", item.director)}
-                {renderDetail("Seasons", item.seasonCount)}
-                {renderDetail("Episodes", item.episodeCount)}
+                {renderDetailRow("Director", item.director)}
+                {renderDetailRow("Seasons", item.seasonCount)}
+                {renderDetailRow("Episodes", item.episodeCount)}
               </>
             )}
             {item.mediaType === "book" && (
               <>
-                {renderDetail("Authors", item.authors)}
-                {renderDetail("Pages", item.pageCount)}
-                {renderDetail("Publisher", item.publisher)}
-                {renderDetail("ISBN", item.isbn)}
+                {renderDetailRow("Authors", item.authors)}
+                {renderDetailRow("Pages", item.pageCount)}
+                {renderDetailRow("Publisher", item.publisher)}
+                {renderDetailRow("ISBN", item.isbn)}
               </>
             )}
             {item.mediaType === "game" && (
               <>
-                {renderDetail("Platforms", item.platforms)}
-                {renderDetail("Developers", item.developers)}
-                {renderDetail("Publisher", item.gamePublisher)}
-                {renderDetail("Hours Played", item.hoursPlayed)}
+                {renderDetailRow("Platforms", item.platforms)}
+                {renderDetailRow("Developers", item.developers)}
+                {renderDetailRow("Publisher", item.gamePublisher)}
+                {renderDetailRow("Hours Played", item.hoursPlayed)}
               </>
             )}
             {item.mediaType === "music_album" && (
               <>
-                {renderDetail("Artist", item.artist)}
-                {renderDetail("Genres", item.musicGenre)}
-                {renderDetail("Tracks", item.trackCount)}
-                {renderDetail("Label", item.recordLabel)}
+                {renderDetailRow("Artist", item.artist)}
+                {renderDetailRow("Genres", item.musicGenre)}
+                {renderDetailRow("Tracks", item.trackCount)}
+                {renderDetailRow("Label", item.recordLabel)}
               </>
             )}
           </div>
 
-          {/* Notes/Review */}
+          {/* Notes/Review Section */}
           {item.notes && (
             <div className="mt-2 pt-3 border-t border-zinc-700/50">
               <h3 className="text-md font-semibold text-sky-400 mb-1.5">
@@ -254,18 +273,18 @@ export default function ViewItemModal({
             </div>
           )}
 
-          {/* Action Buttons */}
+          {/* Action Buttons (Edit) */}
           <div className="mt-auto pt-4 flex justify-end gap-3">
             <button
               onClick={() => {
-                onClose(); // Close this modal first
-                onEdit(item); // Then trigger the edit modal
+                onClose(); // Close this view modal.
+                onEdit(item); // Trigger the edit modal.
               }}
               className="px-4 py-2 text-sm rounded-md bg-sky-600 hover:bg-sky-500 text-white transition-colors flex items-center gap-2"
             >
               <Edit className="w-4 h-4" /> Edit
             </button>
-            {/* Add Delete button if needed */}
+            {/* Placeholder for a potential Delete button */}
           </div>
         </div>
       </div>
