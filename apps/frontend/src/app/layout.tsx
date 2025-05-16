@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <body
-        className={`${roboto.variable} font-sans bg-gradient-to-t from-powder to-ashe bg-fixed min-h-screen flex flex-col`}
+        className={`${roboto.variable} font-sans bg-ashe bg-fixed min-h-screen flex flex-col`}
       >
         <AuthProvider>
           <InnerLayout>{children}</InnerLayout>

@@ -407,7 +407,7 @@ export default function MediaLibraryContainer({
             </button>
           </div>
           {/* Sticky stats bar */}
-          <div className="bg-powder/50 backdrop-blur-sm text-zinc-400 text-sm rounded-lg shadow p-6 mb-8 sticky top-4 z-30">
+          <div className="bg-powder/50 backdrop-blur-sm text-zinc-400 text-sm rounded-lg shadow p-6 mb-8 top-4 z-30">
             <p className="font-medium text-zinc-200 text-lg mb-3">
               {/* Display title for stats section including allowed media types */}
               Stats (

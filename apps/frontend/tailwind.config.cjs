@@ -6,6 +6,7 @@ module.exports = {
       colors: {
         powder: "#0E0F11",
         ashe: "#181A1C",
+        dusk: "#222428",
       },
       fontFamily: {
         sans: ["var(--font-roboto)", "sans-serif"],

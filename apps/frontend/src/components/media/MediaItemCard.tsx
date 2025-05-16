@@ -53,14 +53,10 @@ export default function MediaItemCard({
       })
     : ""; // Display nothing if no date is available.
 
-  // Select the appropriate icon based on the media type.
-  const CardSpecificIcon =
-    MEDIA_TYPE_CARD_ICONS[item.mediaType] || SquareLibrary; // Default to SquareLibrary icon.
-
   // --- JSX Return ---
   return (
     <div
-      className="flex flex-col items-center w-[160px] sm:w-[180px] gap-3 cursor-pointer group/card"
+      className="flex flex-col items-center w-[160px] sm:w-[180px] gap-3 cursor-default group/card"
       onClick={() => onClick(item)} // Trigger view modal on card click.
       role="button" // Indicate clickable role for accessibility.
       tabIndex={0} // Make it focusable.
@@ -71,9 +67,9 @@ export default function MediaItemCard({
       aria-label={`View details for ${item.title}`}
     >
       {/* --- Cover Image Section --- */}
-      <div className="relative w-full aspect-[2/3] shadow-lg rounded-lg overflow-hidden">
+      <div className="relative w-full aspect-[2/3] shadow-lg rounded-lg hover:scale-105 transition-transform duration-200 ease-in">
         {/* Image container with hover scale effect. */}
-        <div className="absolute inset-0 group-hover/card:scale-105 transition-transform duration-200 ease-in-out">
+        <div className="absolute inset-0 ">
           <img
             src={item.cover || "/placeholder.jpg"} // Use item cover or a placeholder.
             alt={`Cover for ${item.title}`}
@@ -93,23 +89,18 @@ export default function MediaItemCard({
             event.stopPropagation(); // Prevent card click event from firing.
             onEdit(item); // Trigger edit action.
           }}
-          className="absolute top-2 right-2 bg-powder/80 backdrop-blur-sm text-zinc-200 hover:text-sky-400 p-2 rounded-full opacity-0 group-hover/card:opacity-100 transition-opacity ease-in-out duration-200 z-10"
+          className="absolute top-2 right-2 bg-powder/80 backdrop-blur-sm text-zinc-200 p-2 rounded-full opacity-0 group-hover/card:opacity-100 transition-opacity ease-in duration-200 z-10"
           aria-label={`Edit ${item.title}`}
         >
           <Pen className="w-4 h-4" />
         </button>
-
-        {/* Small media type icon at bottom-left of image. */}
-        <div className="absolute bottom-2 left-2 bg-powder/80 backdrop-blur-sm text-zinc-200 p-1.5 rounded-full z-10">
-          <CardSpecificIcon className="w-4 h-4" />
-        </div>
       </div>
 
       {/* --- Information Below Image --- */}
-      <div className="flex flex-col w-full px-1">
+      <div className="flex flex-col w-full px-1 gap-1">
         {/* Item title, truncates if too long. */}
         <p
-          className="text-sm font-semibold text-zinc-200 truncate group-hover/card:text-sky-400 transition-colors"
+          className="text-sm text-zinc-600 truncate hover:text-sky-400 duration-200 ease-in"
           title={item.title} // Show full title on hover.
         >
           {item.title}
@@ -120,10 +111,10 @@ export default function MediaItemCard({
             {[1, 2, 3, 4, 5].map((starValue) => (
               <Star
                 key={starValue}
-                className={`w-3.5 h-3.5 ${
+                className={`w-4 h-4 ${
                   item.rating && item.rating >= starValue
                     ? "text-sky-400 fill-sky-400" // Filled star for rated.
-                    : "text-zinc-600 fill-zinc-800/50" // Empty star.
+                    : "text-zinc-800 fill-zinc-0" // Empty star.
                 }`}
               />
             ))}
@@ -133,14 +124,14 @@ export default function MediaItemCard({
                 event.stopPropagation(); // Prevent card click.
                 onToggleFavorite(item._id, !item.favorite); // Toggle favorite status.
               }}
-              className="ml-1.5 text-zinc-500 hover:text-red-500 transition-colors"
+              className="ml-1.5 text-zinc-500 hover:text-sky-400 ease-in-out duration-200"
               aria-label={`Toggle ${item.title} as favorite`}
             >
               <Heart
-                className={`w-3.5 h-3.5 transition-all ${
+                className={`w-4 h-4 transition-all ${
                   item.favorite
                     ? "text-red-500 fill-red-500" // Favorite icon style.
-                    : "hover:fill-red-500/30" // Non-favorite icon style.
+                    : "" // Non-favorite icon style.
                 }`}
               />
             </button>
