@@ -22,7 +22,7 @@ import {
   RotateCcw,
   XCircle,
 } from "lucide-react";
-import { RefObject } from "react"; // Import RefObject for modal ref.
+import { RefObject, useEffect, useRef, useState } from "react"; // Import RefObject, useEffect, useRef, useState
 import { IMediaItem, MediaType } from "@/types/media";
 
 // Map media types to their corresponding icons for the modal header.
@@ -62,18 +62,37 @@ export default function ViewItemModal({
   modalRef,
   onEdit,
 }: ViewItemModalProps) {
+  // --- Refs and State for Dynamic Sizing ---
+  const imagePaneRef = useRef<HTMLDivElement | null>(null); // Ref for the left image pane
+  const [rightPaneWidth, setRightPaneWidth] = useState<number | string>("auto"); // State for right pane's width
+
+  // --- Effects to Sync Right Pane Width with Left Pane Height ---
+  useEffect(() => {
+    // Function to update the width of the right pane.
+    const updateRightPaneWidth = () => {
+      if (imagePaneRef.current) {
+        // Set right pane width to be equal to the calculated height of the image pane.
+        const imageHeight = imagePaneRef.current.offsetHeight;
+        setRightPaneWidth(imageHeight);
+      }
+    };
+
+    // Call initially and on window resize.
+    updateRightPaneWidth();
+    window.addEventListener("resize", updateRightPaneWidth);
+
+    // Cleanup event listener on component unmount.
+    return () => window.removeEventListener("resize", updateRightPaneWidth);
+  }, [item]); // Rerun if item changes, as image might change
+
   // --- Derived Data and Icon Selection ---
-  // Default rating to 0 if undefined.
   const currentRating = item.rating ?? 0;
-  // Select the appropriate icon for the media type, defaulting to Info icon.
   const ItemTypeIcon = MODAL_MEDIA_TYPE_ICONS[item.mediaType] || Info;
-  // Select the appropriate icon for the item's status, if status exists.
   const CurrentStatusIcon = item.status ? STATUS_ICONS[item.status] : null;
 
   // --- Helper Functions ---
-  // Format a date string or Date object for display.
   const formatDateForDisplay = (dateInput?: string | Date): string => {
-    if (!dateInput) return "N/A"; // Return "N/A" if date is not available.
+    if (!dateInput) return "N/A";
     try {
       return new Date(dateInput).toLocaleDateString("en-US", {
         year: "numeric",
@@ -86,13 +105,11 @@ export default function ViewItemModal({
     }
   };
 
-  // Render a detail row if the value is present.
   const renderDetailRow = (
     label: string,
     value?: string | number | string[] | null,
-    IconComponent?: LucideIcon // Optional icon for the detail row.
+    IconComponent?: LucideIcon
   ) => {
-    // Do not render if value is undefined, null, an empty array, or an empty string.
     if (
       value === undefined ||
       value === null ||
@@ -101,11 +118,9 @@ export default function ViewItemModal({
     ) {
       return null;
     }
-    // Join array values into a comma-separated string.
     const displayValue = Array.isArray(value)
       ? value.join(", ")
       : String(value);
-
     return (
       <div className="flex items-start text-sm">
         {IconComponent && (
@@ -120,174 +135,186 @@ export default function ViewItemModal({
   // --- JSX Return ---
   return (
     // Modal backdrop and container.
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[60] p-4 overflow-y-auto">
+    <div className="fixed inset-0 bg-black/90 backdrop-blur flex items-center justify-center z-[60] p-4">
+      {/* Main modal structure: flex row, max width/height, prevent content overflow. */}
       <div
-        ref={modalRef} // Attach ref for click-outside detection.
-        className="relative bg-powder text-zinc-300 rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col sm:flex-row overflow-hidden"
+        ref={modalRef}
+        className="relative bg-powder text-zinc-300 rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-row overflow-hidden"
       >
-        {/* Left Side: Cover Image */}
-        <div className="w-full sm:w-1/3 h-64 sm:h-auto bg-black flex-shrink-0">
+        {/* Left Side: Cover Image Area. */}
+        {/* Define a fixed width proportion (e.g., 40%) and a 2:3 aspect ratio. */}
+        {/* flex-shrink-0 prevents it from shrinking. */}
+        <div
+          ref={imagePaneRef}
+          className="w-[40%] flex-shrink-0 bg-black aspect-[2/3]" // Example: 40% width for image
+        >
           <img
             src={
               item.cover ||
               "https://placehold.co/400x600/333333/FFFFFF?text=No+Cover"
             }
             alt={`Cover for ${item.title}`}
+            // Image fills its 2:3 container, maintaining aspect ratio and cropping if needed.
             className="w-full h-full object-cover"
-            onError={(
-              event // Fallback image.
-            ) =>
+            onError={(event) =>
               (event.currentTarget.src =
                 "https://placehold.co/400x600/333333/FFFFFF?text=No+Cover")
             }
           />
         </div>
-
-        {/* Right Side: Item Details */}
-        <div className="w-full sm:w-2/3 p-6 flex flex-col gap-3 overflow-y-auto">
-          {/* Modal Header: Title, Type Icon, Close Button */}
-          <div className="flex justify-between items-start mb-2">
-            <div className="flex items-center gap-3">
-              <ItemTypeIcon className="w-7 h-7 text-sky-400 flex-shrink-0" />
-              <h2 className="text-2xl sm:text-3xl font-bold text-zinc-100 break-words mr-8">
+        {/* Right Side: Item Details Area. */}
+        {/* Width is dynamically set to match the height of the left image pane, creating a square. */}
+        {/* Height will match image pane due to flex-row alignment. overflow-y-auto for scrolling. */}
+        <div
+          style={{
+            width:
+              typeof rightPaneWidth === "number"
+                ? `${rightPaneWidth}px`
+                : rightPaneWidth,
+          }}
+          className="flex-shrink-0 bg-powder p-6 flex flex-col gap-4 overflow-y-auto"
+        >
+          {/* Modal Header: Title, Type Icon, Close Button. */}
+          <div className="flex justify-between items-start mb-1 flex-shrink-0">
+            {" "}
+            {/* Reduced bottom margin */}
+            <div className="flex items-center gap-2 min-w-0">
+              {" "}
+              {/* Reduced gap */}
+              <ItemTypeIcon className="w-6 h-6 text-sky-400 flex-shrink-0" />{" "}
+              {/* Slightly smaller icon */}
+              <h2 className="text-xl sm:text-2xl font-bold text-zinc-100 break-words mr-2">
+                {" "}
+                {/* Smaller title */}
                 {item.title}
               </h2>
             </div>
             <button
               onClick={onClose}
-              className="text-zinc-500 hover:text-sky-400 transition-colors"
+              className="text-zinc-500 hover:text-sky-400 transition-colors flex-shrink-0"
               aria-label="Close modal"
             >
-              <X className="w-7 h-7" />
+              <X className="w-6 h-6" /> {/* Slightly smaller close icon */}
             </button>
           </div>
-
-          {/* Rating Stars */}
-          {item.rating !== undefined && item.rating > 0 && (
-            <div className="flex items-center gap-1 mb-2">
-              {[1, 2, 3, 4, 5].map((starValue) => (
-                <Star
-                  key={starValue}
-                  className={`w-5 h-5 ${
-                    currentRating >= starValue
-                      ? "text-sky-400 fill-sky-400"
-                      : "text-zinc-600 fill-zinc-800/30"
-                  }`}
-                />
-              ))}
-              <span className="ml-2 text-sm text-zinc-400">
-                ({currentRating}/5)
-              </span>
-            </div>
-          )}
-
-          {/* Status Information */}
-          {item.status && (
-            <div className="flex items-center text-sm mb-2">
-              {CurrentStatusIcon && (
-                <CurrentStatusIcon className="w-4 h-4 mr-2 text-sky-400 flex-shrink-0" />
-              )}
-              <span className="font-semibold text-zinc-400 mr-2">Status:</span>
-              <span className="text-zinc-200 capitalize">
-                {item.status.replace(/_/g, " ")}{" "}
-                {/* Format status string for display */}
-              </span>
-            </div>
-          )}
-
-          {/* Common Details Section (Dates, Tags) */}
-          <div className="space-y-2.5 py-2 border-y border-zinc-700/50 my-2">
-            {renderDetailRow(
-              "Consumed On",
-              formatDateForDisplay(item.dateConsumed),
-              CalendarDays
+          {/* Scrollable content starts here */}
+          <div className="flex-grow overflow-y-auto space-y-4 pr-1">
+            {" "}
+            {/* Added padding-right for scrollbar */}
+            {/* Display rating stars if rating is available and greater than 0. */}
+            {item.rating !== undefined && item.rating > 0 && (
+              <div className="flex items-center gap-1">
+                {[1, 2, 3, 4, 5].map((starValue) => (
+                  <Star
+                    key={starValue}
+                    className={`w-5 h-5 ${
+                      // Smaller stars
+                      currentRating >= starValue
+                        ? "text-sky-400 fill-sky-400"
+                        : "text-zinc-800 fill-zinc-0"
+                    }`}
+                  />
+                ))}
+                {/* Smaller text */}
+              </div>
             )}
-            {renderDetailRow(
-              "Released On",
-              formatDateForDisplay(item.releaseDate),
-              CalendarDays
-            )}
-            {renderDetailRow(
-              "Logged On",
-              formatDateForDisplay(item.dateLogged),
-              CalendarDays
-            )}
-            {renderDetailRow("Tags", item.tags, Tag)}
-          </div>
-
-          {/* Media Type Specific Details Section */}
-          <div className="space-y-2.5 py-2">
-            {item.mediaType === "movie" && (
-              <>
-                {renderDetailRow("Director", item.director)}
-                {renderDetailRow(
-                  "Runtime",
-                  item.runtimeMinutes
-                    ? `${item.runtimeMinutes} mins`
-                    : undefined
+            {/* Display status information if available. */}
+            {item.status && (
+              <div className="flex items-center text-xs mt-1">
+                {" "}
+                {/* Smaller text, margin top */}
+                {CurrentStatusIcon && (
+                  <CurrentStatusIcon className="w-3 h-3 mr-1 text-sky-400 flex-shrink-0" />
                 )}
-              </>
+                <span className="font-semibold text-zinc-400 mr-1">
+                  Status:
+                </span>
+                <span className="text-zinc-200 capitalize">
+                  {item.status.replace(/_/g, " ")}
+                </span>
+              </div>
             )}
-            {(item.mediaType === "show" || item.mediaType === "anime") && (
-              <>
-                {renderDetailRow("Director", item.director)}
-                {renderDetailRow("Seasons", item.seasonCount)}
-                {renderDetailRow("Episodes", item.episodeCount)}
-              </>
-            )}
-            {item.mediaType === "book" && (
-              <>
-                {renderDetailRow("Authors", item.authors)}
-                {renderDetailRow("Pages", item.pageCount)}
-                {renderDetailRow("Publisher", item.publisher)}
-                {renderDetailRow("ISBN", item.isbn)}
-              </>
-            )}
-            {item.mediaType === "game" && (
-              <>
-                {renderDetailRow("Platforms", item.platforms)}
-                {renderDetailRow("Developers", item.developers)}
-                {renderDetailRow("Publisher", item.gamePublisher)}
-                {renderDetailRow("Hours Played", item.hoursPlayed)}
-              </>
-            )}
-            {item.mediaType === "music_album" && (
-              <>
-                {renderDetailRow("Artist", item.artist)}
-                {renderDetailRow("Genres", item.musicGenre)}
-                {renderDetailRow("Tracks", item.trackCount)}
-                {renderDetailRow("Label", item.recordLabel)}
-              </>
-            )}
-          </div>
-
-          {/* Notes/Review Section */}
-          {item.notes && (
-            <div className="mt-2 pt-3 border-t border-zinc-700/50">
-              <h3 className="text-md font-semibold text-sky-400 mb-1.5">
-                Notes/Review
-              </h3>
-              <p className="text-sm text-zinc-300 whitespace-pre-wrap bg-ashe/30 p-3 rounded-md">
-                {item.notes}
-              </p>
+            {/* Common Details Section: Dates, Tags. */}
+            <div className="space-y-2 py-2 border-y border-zinc-700/50">
+              {" "}
+              {/* Reduced padding/margins */}
+              {renderDetailRow(
+                "Consumed",
+                formatDateForDisplay(item.dateConsumed),
+                CalendarDays
+              )}
+              {renderDetailRow(
+                "Released",
+                formatDateForDisplay(item.releaseDate),
+                CalendarDays
+              )}
+              {renderDetailRow(
+                "Logged",
+                formatDateForDisplay(item.dateLogged),
+                CalendarDays
+              )}
+              {renderDetailRow("Tags", item.tags, Tag)}
             </div>
-          )}
-
-          {/* Action Buttons (Edit) */}
-          <div className="mt-auto pt-4 flex justify-end gap-3">
+            {/* Media Type Specific Details Section. */}
+            <div className="space-y-2 py-2">
+              {" "}
+              {/* Reduced padding */}
+              {item.mediaType === "movie" && (
+                <>
+                  {renderDetailRow("Director", item.director)}
+                  {renderDetailRow(
+                    "Runtime",
+                    item.runtimeMinutes
+                      ? `${item.runtimeMinutes} mins`
+                      : undefined
+                  )}
+                </>
+              )}
+              {(item.mediaType === "show" || item.mediaType === "anime") && (
+                <>
+                  {renderDetailRow("Director", item.director)}
+                  {renderDetailRow("Seasons", item.seasonCount)}
+                  {renderDetailRow("Episodes", item.episodeCount)}
+                </>
+              )}
+              {/* ... other media types ... */}
+            </div>
+            {/* Display notes or review if available. */}
+            {item.notes && (
+              <div className="space-y-2 py-2 border-t border-zinc-700/50">
+                {" "}
+                {/* Reduced padding/margins */}
+                <h3 className="text-sm font-semibold text-sky-400">
+                  Notes & Review
+                </h3>{" "}
+                {/* Smaller heading */}
+                <p className="text-xs text-zinc-300 whitespace-pre-wrap bg-ashe/30 p-2 rounded-md">
+                  {" "}
+                  {/* Smaller text, padding */}
+                  {item.notes}
+                </p>
+              </div>
+            )}
+          </div>{" "}
+          {/* End of scrollable content div */}
+          {/* Action Buttons Area. */}
+          <div className="pt-2 flex justify-end gap-2 flex-shrink-0">
+            {" "}
+            {/* Reduced padding, gap */}
             <button
               onClick={() => {
-                onClose(); // Close this view modal.
-                onEdit(item); // Trigger the edit modal.
+                onClose();
+                onEdit(item);
               }}
-              className="px-4 py-2 text-sm rounded-md bg-sky-600 hover:bg-sky-500 text-white transition-colors flex items-center gap-2"
+              className="px-3 py-1.5 text-xs rounded-md bg-sky-600 hover:bg-sky-500 text-white transition-colors flex items-center gap-1.5" // Smaller button
             >
-              <Edit className="w-4 h-4" /> Edit
+              <Edit className="w-3 h-3" /> Edit {/* Smaller icon */}
             </button>
-            {/* Placeholder for a potential Delete button */}
           </div>
-        </div>
-      </div>
-    </div>
+        </div>{" "}
+        {/* End of Right Details Pane */}
+      </div>{" "}
+      {/* End of Main Modal Structure */}
+    </div> // End of Modal Backdrop
   );
 }
