@@ -62,7 +62,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
       <Header />
       <div className="flex justify-center mt-6 flex-grow">
         <aside className="w-1/6 hidden lg:block" />
-        <main className="w-4/6 max-w-[1200px]">{children}</main>
+        <main className="relative w-4/6 max-w-[1200px]">{children}</main>
         <aside className="w-1/6 hidden lg:block" />
       </div>
     </div>
