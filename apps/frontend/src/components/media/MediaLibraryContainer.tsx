@@ -363,25 +363,27 @@ export default function MediaLibraryContainer({
             </div>
           )}
           {groupedAndSortedElements.map(([year, groupOfItems]) => (
-            <section
+            <div
               key={year}
-              className="bg-powder rounded-xl px-4 sm:px-6 py-10"
+              className="p-0.5 bg-gradient-to-r from-teal-400 via-cyan-400 to-sky-400 rounded-2xl"
             >
-              <h2 className="text-3xl font-semibold text-zinc-300 mb-8 text-center">
-                {year}
-              </h2>
-              <div className="flex flex-wrap gap-x-4 gap-y-8 sm:gap-x-6 justify-center w-full">
-                {groupOfItems.map((item) => (
-                  <MediaItemCard
-                    key={item._id}
-                    item={item}
-                    onEdit={handleEditItem}
-                    onClick={handleViewItem}
-                    onToggleFavorite={handleToggleFavorite}
-                  />
-                ))}
-              </div>
-            </section>
+              <section className="bg-powder rounded-2xl px-4 sm:px-6 py-10">
+                <h2 className="text-3xl font-semibold text-zinc-300 mb-8 text-center">
+                  {year}
+                </h2>
+                <div className="flex flex-wrap gap-x-4 gap-y-8 sm:gap-x-6 justify-center w-full">
+                  {groupOfItems.map((item) => (
+                    <MediaItemCard
+                      key={item._id}
+                      item={item}
+                      onEdit={handleEditItem}
+                      onClick={handleViewItem}
+                      onToggleFavorite={handleToggleFavorite}
+                    />
+                  ))}
+                </div>
+              </section>
+            </div>
           ))}
         </div>
       </div>
