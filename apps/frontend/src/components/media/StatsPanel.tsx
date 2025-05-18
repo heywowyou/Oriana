@@ -21,41 +21,47 @@ export default function StatsPanel({
   statsTitle,
 }: StatsPanelProps) {
   return (
-    <div className="absolute top-0 -left-1/4 w-1/4 h-auto bg-powder/80 backdrop-blur-sm text-zinc-400 text-sm rounded-lg shadow-lg p-6 z-30 hidden lg:block max-h-[calc(100vh-100px)] overflow-y-auto">
-      <p className="font-medium text-zinc-200 text-lg mb-3">{statsTitle}</p>
-      <div className="grid grid-cols-1 gap-4 text-center">
+    <div className="absolute top-0 -left-72 w-60 h-auto bg-powder/80 backdrop-blur-sm text-zinc-400 text-sm rounded-2xl shadow-lg p-6 z-30 hidden lg:block max-h-[calc(100vh-100px)] overflow-y-auto">
+      <p className="font-medium text-zinc-200 text-lg mb-3 text-center">
+        {statsTitle}
+      </p>
+      <div className="flex flex-col items-center gap-6">
         {/* Display total count */}
-        <div>
-          Total:{" "}
-          <span className="text-zinc-100 font-semibold block text-xl">
-            {totalDisplayed}
-          </span>
-        </div>
-        {/* Display count for current year */}
-        <div>
-          This Year:{" "}
-          <span className="text-zinc-100 font-semibold block text-xl">
-            {countThisYear}
-          </span>
+        <div className="flex gap-6 text-center">
+          <div>
+            Total:{" "}
+            <span className="text-zinc-100 font-semibold block text-xl">
+              {totalDisplayed}
+            </span>
+          </div>
+          {/* Display count for current year */}
+          <div>
+            This Year:{" "}
+            <span className="text-zinc-100 font-semibold block text-xl">
+              {countThisYear}
+            </span>
+          </div>
         </div>
         {/* Display count for each allowed media type */}
-        {allowedMediaTypes.map((type) => {
-          const IconComponent = mediaTypeIcons[type] || SquareLibrary;
-          return (
-            <div
-              key={type}
-              className="flex flex-col items-center gap-1 hover:text-sky-400 transition-colors"
-            >
-              <IconComponent className="w-6 h-6" />
-              <span className="capitalize text-xs">
-                {type.replace(/_/g, " ")}
-              </span>
-              <span className="text-zinc-100 font-semibold text-lg">
-                {countBySpecificType[type] || 0}
-              </span>
-            </div>
-          );
-        })}
+        <div className="flex gap-6 text-center">
+          {allowedMediaTypes.map((type) => {
+            const IconComponent = mediaTypeIcons[type] || SquareLibrary;
+            return (
+              <div
+                key={type}
+                className="flex flex-col items-center gap-1 hover:text-sky-400 transition-colors"
+              >
+                <IconComponent className="w-6 h-6" />
+                <span className="capitalize text-xs">
+                  {type.replace(/_/g, " ")}
+                </span>
+                <span className="text-zinc-100 font-semibold text-lg">
+                  {countBySpecificType[type] || 0}
+                </span>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

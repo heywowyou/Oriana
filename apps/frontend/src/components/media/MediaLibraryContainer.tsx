@@ -82,9 +82,7 @@ export default function MediaLibraryContainer({
     {}
   );
   // Generate the title for the stats panel
-  const statsTitle = `Stats (${allowedMediaTypes
-    .map((type) => type.replace(/_/g, " "))
-    .join(", ")})`;
+  const statsTitle = "Stats";
 
   // --- Data Fetching ---
   const fetchAllUserMediaItems = useCallback(async () => {
@@ -347,12 +345,6 @@ export default function MediaLibraryContainer({
               mediaTypeIcons={MEDIA_TYPE_ICONS}
               statsTitle={statsTitle}
             />
-          )}
-
-          {pageTitle && (
-            <h1 className="text-4xl font-bold text-zinc-200 text-center mb-6">
-              {pageTitle}
-            </h1>
           )}
           <div className="fixed bottom-8 right-8 z-40">
             <button
