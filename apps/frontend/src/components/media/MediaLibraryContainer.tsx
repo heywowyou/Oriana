@@ -23,7 +23,7 @@ import MediaItemCard from "./MediaItemCard";
 import LogItemForm from "./LogItemForm";
 import EditItemForm from "./EditItemForm";
 import ViewItemModal from "./ViewItemModal";
-import StatsPanel from "./StatsPanel"; // Import the new StatsPanel component
+import StatsPanel from "./StatsPanel";
 
 // Map media types to their corresponding icons.
 const MEDIA_TYPE_ICONS: Partial<Record<MediaType, LucideIcon>> = {
@@ -81,7 +81,6 @@ export default function MediaLibraryContainer({
     },
     {}
   );
-  // Generate the title for the stats panel
   const statsTitle = "Stats";
 
   // --- Data Fetching ---
@@ -191,14 +190,12 @@ export default function MediaLibraryContainer({
 
   const handleToggleFavorite = async (id: string, newStatus: boolean) => {
     if (!idToken) return;
-
     const originalAllItems = [...allItems];
     setAllItems((previousItems) =>
       previousItems.map((element) =>
         element._id === id ? { ...element, favorite: newStatus } : element
       )
     );
-
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/media/${id}/favorite`,
@@ -285,21 +282,35 @@ export default function MediaLibraryContainer({
   return (
     <>
       {showAddEditModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur flex items-center justify-center z-50 px-4">
+        // Modal Backdrop: Full screen, centers content
+        <div className="fixed inset-0 bg-black/80 backdrop-blur flex items-center justify-center z-50 p-4 sm:p-6 md:p-8">
+          {/* Modal Card: Max width, max height, flex column for content structuring */}
           <div
             ref={addEditModalRef}
-            className="relative bg-powder rounded-lg shadow-lg p-6 w-full max-w-md"
+            className="relative bg-powder rounded-lg shadow-lg w-full max-w-md max-h-[calc(100vh-4rem)] flex flex-col overflow-hidden"
+            // max-h-[calc(100vh-4rem)] ensures some padding from viewport edges (4rem = 2rem top + 2rem bottom)
+            // You can also use max-h-[90vh] or a fixed pixel value like max-h-[700px]
+            // flex flex-col allows the form inside to grow and its content to scroll
           >
-            <button
-              onClick={() => {
-                setShowAddEditModal(false);
-                setEditingElement(null);
-              }}
-              className="absolute top-3 right-3 text-zinc-500 hover:text-sky-400 transition-colors"
-              aria-label="Close modal"
-            >
-              <X className="w-6 h-6" />
-            </button>
+            {/* Modal Header Area (Optional, but good for title and close button) */}
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-ashe flex-shrink-0">
+              <h3 className="text-lg font-semibold text-zinc-100">
+                {editingElement ? "Edit Item" : "Log New Item"}
+              </h3>
+              <button
+                onClick={() => {
+                  setShowAddEditModal(false);
+                  setEditingElement(null);
+                }}
+                className="text-zinc-500 hover:text-sky-400 transition-colors"
+                aria-label="Close modal"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            {/* Form Area: This will now take the remaining space and allow its content to scroll */}
+            {/* The LogItemForm or EditItemForm will be flex-grow and handle its own internal scrolling */}
             {editingElement ? (
               <EditItemForm
                 itemToEdit={editingElement}
@@ -335,8 +346,7 @@ export default function MediaLibraryContainer({
 
       <div className="flex justify-center mt-10">
         <div className="relative flex flex-col gap-10 w-full max-w-[1200px] pb-20 px-4">
-          {/* Render the StatsPanel here */}
-          {displayedElements.length > 0 && ( // Optionally only show if there are items
+          {displayedElements.length > 0 && (
             <StatsPanel
               totalDisplayed={totalDisplayed}
               countThisYear={countThisYear}
@@ -345,6 +355,11 @@ export default function MediaLibraryContainer({
               mediaTypeIcons={MEDIA_TYPE_ICONS}
               statsTitle={statsTitle}
             />
+          )}
+          {pageTitle && (
+            <h1 className="text-4xl font-bold text-zinc-200 text-center mb-6">
+              {pageTitle}
+            </h1>
           )}
           <div className="fixed bottom-8 right-8 z-40">
             <button
@@ -365,9 +380,9 @@ export default function MediaLibraryContainer({
           {groupedAndSortedElements.map(([year, groupOfItems]) => (
             <div
               key={year}
-              className="p-0.5 bg-gradient-to-r from-teal-400 via-cyan-400 to-sky-400 rounded-2xl"
+              className="p-1 bg-gradient-to-r from-red-500 via-orange-400 via-yellow-400 via-lime-400 via-cyan-400 via-indigo-500 to-violet-500 rounded-lg"
             >
-              <section className="bg-powder rounded-2xl px-4 sm:px-6 py-10">
+              <section className="bg-powder rounded-xl px-4 sm:px-6 py-10">
                 <h2 className="text-3xl font-semibold text-zinc-300 mb-8 text-center">
                   {year}
                 </h2>

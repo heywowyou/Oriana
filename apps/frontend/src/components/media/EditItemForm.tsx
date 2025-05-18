@@ -1,4 +1,3 @@
-// Specify this component is a client-side component.
 "use client";
 
 // Import necessary React hooks, authentication context, and types.
@@ -22,30 +21,24 @@ export default function EditItemForm({
   availableSubTypes = [],
 }: EditItemFormProps) {
   // --- State Declarations ---
-  // Initialize form data with values from the item being edited.
   const [formData, setFormDataState] = useState<Partial<IMediaItem>>({
     ...itemToEdit,
-    // Ensure date strings are in 'YYYY-MM-DD' format for input fields.
     dateConsumed: itemToEdit.dateConsumed
       ? new Date(itemToEdit.dateConsumed).toISOString().split("T")[0]
       : "",
     releaseDate: itemToEdit.releaseDate
       ? new Date(itemToEdit.releaseDate).toISOString().split("T")[0]
       : "",
-    // Initialize array fields to prevent undefined errors.
     tags: itemToEdit.tags || [],
     authors: itemToEdit.authors || [],
     platforms: itemToEdit.platforms || [],
     developers: itemToEdit.developers || [],
     musicGenre: itemToEdit.musicGenre || [],
   });
-  // Manage image uploading state.
   const [uploading, setUploading] = useState(false);
-  // Access authentication token.
   const { idToken } = useAuth();
 
   // --- Effects ---
-  // Update form data if the 'itemToEdit' prop changes.
   useEffect(() => {
     setFormDataState({
       ...itemToEdit,
@@ -61,10 +54,9 @@ export default function EditItemForm({
       developers: itemToEdit.developers || [],
       musicGenre: itemToEdit.musicGenre || [],
     });
-  }, [itemToEdit]); // Rerun if itemToEdit changes.
+  }, [itemToEdit]);
 
   // --- Form Field Update Handler ---
-  // Update a specific field in the form data state.
   const setFormField = <K extends keyof IMediaItem>(
     fieldName: K,
     value: IMediaItem[K]
@@ -76,7 +68,6 @@ export default function EditItemForm({
   };
 
   // --- File Change Handler ---
-  // Handle image file selection and upload.
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -84,12 +75,10 @@ export default function EditItemForm({
     if (file && idToken) {
       setUploading(true);
       try {
-        // Upload image and get its URL.
         const imageUrl = await uploadImage(file);
-        setFormField("cover", imageUrl); // Update cover field with the new URL.
+        setFormField("cover", imageUrl);
       } catch (error) {
         console.error("Error uploading image:", error);
-        // Consider adding user-facing error handling here.
       } finally {
         setUploading(false);
       }
@@ -97,33 +86,25 @@ export default function EditItemForm({
   };
 
   // --- Form Submission Handler ---
-  // Handle form submission to update the media item.
   const handleSubmit = async (event: FormEvent) => {
-    event.preventDefault(); // Prevent default form submission.
+    event.preventDefault();
     if (!idToken || !itemToEdit._id) {
       console.error(
         "Authentication token or item ID is missing. Cannot update."
       );
-      // Consider adding user-facing error handling here.
       return;
     }
-
-    // Prepare payload for the API request.
     const payload: Partial<IMediaItem> = {
       ...formData,
-      mediaType: itemToEdit.mediaType, // Ensure original mediaType is sent, do not allow change here.
+      mediaType: itemToEdit.mediaType,
     };
-
-    // Remove fields that should not be sent or are handled by the backend.
     delete payload._id;
     delete payload.user;
     delete payload.createdAt;
     delete payload.updatedAt;
-    // Use 'any' cast if dateLogged is not a direct key in IMediaItem for Partial.
     delete (payload as any).dateLogged;
 
     try {
-      // Make API request to update the item.
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/media/${itemToEdit._id}`,
         {
@@ -135,43 +116,45 @@ export default function EditItemForm({
           body: JSON.stringify(payload),
         }
       );
-
-      // Handle unsuccessful API response.
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({
           message: "Failed to update item. Server returned non-JSON response.",
         }));
         throw new Error(errorData.message || "Failed to update item");
       }
-
-      // Execute callback on successful update.
       onItemUpdated();
     } catch (error) {
       console.error("Error updating item:", error);
-      // Consider adding user-facing error handling here.
     }
   };
 
-  // The media type for fields is fixed based on the item being edited.
   const currentMediaTypeForFields = itemToEdit.mediaType;
 
   // --- JSX Return ---
+  // The form itself is now a flex column and will grow to fill available space in the modal.
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 caret-gray-400">
-      <MediaFormFields
-        formData={formData}
-        setFormData={setFormField}
-        currentMediaType={currentMediaTypeForFields}
-        // Pass available subtypes; typically empty or not used if media type is fixed for edits.
-        availableSubTypes={
-          availableSubTypes.length > 0 ? availableSubTypes : []
-        }
-        uploading={uploading}
-        handleFileChange={handleFileChange}
-        isEditMode={true} // Indicate this form is for editing.
-      />
-      <div className="text-right">
-        {/* Submit button, disabled during upload. */}
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col flex-grow overflow-hidden p-0 sm:p-0" // Removed original p-6, flex-grow allows it to take space
+    >
+      {/* Scrollable Fields Area: Takes up available space and scrolls its content. */}
+      <div className="flex-grow overflow-y-auto space-y-6 caret-gray-400 p-4 sm:p-6 pt-0">
+        {/* pt-0 because the modal header has bottom padding/border */}
+        <MediaFormFields
+          formData={formData}
+          setFormData={setFormField}
+          currentMediaType={currentMediaTypeForFields}
+          availableSubTypes={
+            availableSubTypes.length > 0 ? availableSubTypes : []
+          }
+          uploading={uploading}
+          handleFileChange={handleFileChange}
+          isEditMode={true}
+        />
+      </div>
+
+      {/* Submit Button Area: Stays at the bottom of the form, within the modal. */}
+      <div className="text-right p-4 sm:p-6 pt-4 border-t border-ashe flex-shrink-0">
         <button
           type="submit"
           disabled={uploading}
