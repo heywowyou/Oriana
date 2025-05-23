@@ -56,7 +56,7 @@ export default function MediaItemCard({
   // --- JSX Return ---
   return (
     <div
-      className="flex flex-col items-center w-[160px] sm:w-[180px] gap-3 cursor-default group/card"
+      className="flex flex-col items-center w-[160px] sm:w-[180px] gap-3 cursor-pointer group/card"
       onClick={() => onClick(item)} // Trigger view modal on card click.
       role="button" // Indicate clickable role for accessibility.
       tabIndex={0} // Make it focusable.
@@ -89,7 +89,7 @@ export default function MediaItemCard({
             event.stopPropagation(); // Prevent card click event from firing.
             onEdit(item); // Trigger edit action.
           }}
-          className="absolute top-2 right-2 bg-powder/80 backdrop-blur-sm text-zinc-200 p-2 rounded-full opacity-0 group-hover/card:opacity-100 transition-opacity ease-in duration-200 z-10"
+          className="absolute top-2 right-2 bg-powder/70 backdrop-blur text-zinc-200 p-2 rounded-xl opacity-0 group-hover/card:opacity-100 transition-opacity ease-in duration-200 z-10"
           aria-label={`Edit ${item.title}`}
         >
           <Pen className="w-4 h-4" />

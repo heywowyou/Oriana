@@ -7,7 +7,6 @@ import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import LoginModal from "@/components/auth/LoginModal";
 import RegisterModal from "@/components/auth/RegisterModal";
-import GrainOverlay from "@/components/GrainOverlay";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -23,17 +22,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <body
-        className={
-          `${roboto.variable} font-sans ` +
-          // bg-fixed: makes the background gradient fixed on scroll
-          `bg-ashe bg-fixed ` +
-          `min-h-screen flex flex-col`
-        }
+        className={`${roboto.variable} bg-powder font-sans min-h-screen flex flex-col`}
       >
         <AuthProvider>
           <InnerLayout>{children}</InnerLayout>
         </AuthProvider>
-        <GrainOverlay />
       </body>
     </html>
   );

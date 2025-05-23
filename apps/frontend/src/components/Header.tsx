@@ -9,7 +9,7 @@ export default function Header() {
   const { isLoggedIn } = useAuth();
 
   return (
-    <header className="bg-powder text-white py-4 shadow-md">
+    <header className="bg-ashe text-white py-3 shadow-md">
       <div className="max-w-[1200px] mx-auto flex justify-between">
         <div className="flex items-center gap-16">
           <Link href="/" className="text-xl font-medium">

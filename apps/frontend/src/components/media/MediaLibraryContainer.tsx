@@ -1,7 +1,8 @@
+// components/media/MediaLibraryContainer.tsx
 "use client";
 
-// Import necessary React hooks and types.
-import { useEffect, useRef, useState, useCallback } from "react";
+// Import React and other necessary hooks/types.
+import React, { useEffect, useRef, useState, useCallback } from "react"; // Added React for potential Fragment use, though not strictly needed for this version
 import { useAuth } from "@/context/AuthContext";
 import { IMediaItem, MediaType } from "@/types/media";
 
@@ -282,17 +283,11 @@ export default function MediaLibraryContainer({
   return (
     <>
       {showAddEditModal && (
-        // Modal Backdrop: Full screen, centers content
         <div className="fixed inset-0 bg-black/80 backdrop-blur flex items-center justify-center z-50 p-4 sm:p-6 md:p-8">
-          {/* Modal Card: Max width, max height, flex column for content structuring */}
           <div
             ref={addEditModalRef}
             className="relative bg-powder rounded-lg shadow-lg w-full max-w-md max-h-[calc(100vh-4rem)] flex flex-col overflow-hidden"
-            // max-h-[calc(100vh-4rem)] ensures some padding from viewport edges (4rem = 2rem top + 2rem bottom)
-            // You can also use max-h-[90vh] or a fixed pixel value like max-h-[700px]
-            // flex flex-col allows the form inside to grow and its content to scroll
           >
-            {/* Modal Header Area (Optional, but good for title and close button) */}
             <div className="flex items-center justify-between p-4 sm:p-6 border-b border-ashe flex-shrink-0">
               <h3 className="text-lg font-semibold text-zinc-100">
                 {editingElement ? "Edit Item" : "Log New Item"}
@@ -308,9 +303,6 @@ export default function MediaLibraryContainer({
                 <X className="w-6 h-6" />
               </button>
             </div>
-
-            {/* Form Area: This will now take the remaining space and allow its content to scroll */}
-            {/* The LogItemForm or EditItemForm will be flex-grow and handle its own internal scrolling */}
             {editingElement ? (
               <EditItemForm
                 itemToEdit={editingElement}
@@ -345,7 +337,8 @@ export default function MediaLibraryContainer({
       )}
 
       <div className="flex justify-center mt-10">
-        <div className="relative flex flex-col gap-10 w-full max-w-[1200px] pb-20 px-4">
+        {/* The gap-14 here will now apply between each year's section (divider + items) */}
+        <div className="relative flex flex-col gap-14 w-full max-w-[1200px] pb-20 px-4">
           {displayedElements.length > 0 && (
             <StatsPanel
               totalDisplayed={totalDisplayed}
@@ -372,14 +365,23 @@ export default function MediaLibraryContainer({
               Click the '+' button to add your first one!
             </div>
           )}
+
+          {/* Map through grouped and sorted elements to display items by year */}
           {groupedAndSortedElements.map(([year, groupOfItems]) => (
-            <section
-              key={year}
-              className="bg-powder rounded-xl px-12 sm:px-12 py-10"
-            >
-              <h2 className="text-2xl font-bold text-zinc-300 mb-8 text-center">
-                {year}
-              </h2>
+            // Use React.Fragment as we are returning multiple elements per year
+            <React.Fragment key={year}>
+              {/* Divider with Year */}
+              <div className="flex items-center">
+                {" "}
+                {/* Removed relative and py-5, as gap-14 on parent handles spacing */}
+                <div className="flex-grow border-t border-zinc-600"></div>
+                <span className="flex-shrink mx-6 text-zinc-300 text-xl font-semibold">
+                  {year}
+                </span>
+                <div className="flex-grow border-t border-zinc-600"></div>
+              </div>
+
+              {/* Item Grid - The parent div already provides gap, so direct item grid here */}
               <div className="flex flex-wrap gap-x-4 gap-y-8 sm:gap-x-6 justify-center w-full">
                 {groupOfItems.map((item) => (
                   <MediaItemCard
@@ -391,7 +393,7 @@ export default function MediaLibraryContainer({
                   />
                 ))}
               </div>
-            </section>
+            </React.Fragment>
           ))}
         </div>
       </div>
