@@ -21,7 +21,7 @@ export default function StatsPanel({
   statsTitle,
 }: StatsPanelProps) {
   return (
-    <div className="absolute top-0 -left-72 w-60 h-auto bg-powder backdrop-blur-sm text-zinc-400 text-sm rounded-2xl shadow-lg p-6 z-30 hidden lg:block max-h-[calc(100vh-100px)] overflow-y-auto">
+    <div className="absolute top-0 -left-72 w-60 h-auto bg-ashe backdrop-blur-sm text-zinc-400 text-sm rounded-2xl shadow-lg p-6 z-30 hidden lg:block max-h-[calc(100vh-100px)] overflow-y-auto">
       <p className="font-medium text-zinc-200 text-lg mb-3 text-center">
         {statsTitle}
       </p>

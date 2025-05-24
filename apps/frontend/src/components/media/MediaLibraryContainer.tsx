@@ -338,7 +338,7 @@ export default function MediaLibraryContainer({
 
       <div className="flex justify-center mt-10">
         {/* The gap-14 here will now apply between each year's section (divider + items) */}
-        <div className="relative flex flex-col gap-14 w-full max-w-[1200px] pb-20 px-4">
+        <div className="relative flex flex-col gap-10 w-full max-w-[1200px] pb-10 px-4">
           {displayedElements.length > 0 && (
             <StatsPanel
               totalDisplayed={totalDisplayed}
@@ -368,21 +368,19 @@ export default function MediaLibraryContainer({
 
           {/* Map through grouped and sorted elements to display items by year */}
           {groupedAndSortedElements.map(([year, groupOfItems]) => (
-            // Use React.Fragment as we are returning multiple elements per year
             <React.Fragment key={year}>
               {/* Divider with Year */}
               <div className="flex items-center">
                 {" "}
-                {/* Removed relative and py-5, as gap-14 on parent handles spacing */}
                 <div className="flex-grow border-t border-zinc-600"></div>
-                <span className="flex-shrink mx-6 text-zinc-300 text-xl font-semibold">
+                <span className="flex-shrink mx-6 text-zinc-200 text-2xl font-semibold">
                   {year}
                 </span>
                 <div className="flex-grow border-t border-zinc-600"></div>
               </div>
 
               {/* Item Grid - The parent div already provides gap, so direct item grid here */}
-              <div className="flex flex-wrap gap-x-4 gap-y-8 sm:gap-x-6 justify-center w-full">
+              <div className="flex flex-wrap gap-x-6 gap-y-10 sm:gap-x-6 justify-center w-full">
                 {groupOfItems.map((item) => (
                   <MediaItemCard
                     key={item._id}

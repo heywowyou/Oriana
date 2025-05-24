@@ -56,7 +56,7 @@ export default function MediaItemCard({
   // --- JSX Return ---
   return (
     <div
-      className="flex flex-col items-center w-[160px] sm:w-[180px] gap-3 cursor-pointer group/card"
+      className="flex flex-col items-center w-[160px] sm:w-[180px] gap-3 cursor-default group/card"
       onClick={() => onClick(item)} // Trigger view modal on card click.
       role="button" // Indicate clickable role for accessibility.
       tabIndex={0} // Make it focusable.
@@ -67,13 +67,13 @@ export default function MediaItemCard({
       aria-label={`View details for ${item.title}`}
     >
       {/* --- Cover Image Section --- */}
-      <div className="relative w-full aspect-[2/3] shadow-lg rounded-lg hover:scale-105 transition-transform duration-200 ease-in">
+      <div className="relative w-full aspect-[2/3] drop-shadow-xl hover:scale-105 transition-transform duration-200 ease-in cursor-pointer">
         {/* Image container with hover scale effect. */}
         <div className="absolute inset-0 ">
           <img
             src={item.cover || "/placeholder.jpg"} // Use item cover or a placeholder.
             alt={`Cover for ${item.title}`}
-            className="w-full h-full object-cover rounded-lg"
+            className="w-full h-full object-cover rounded-xl"
             onError={(
               event // Fallback image if original fails to load.
             ) =>
@@ -100,7 +100,7 @@ export default function MediaItemCard({
       <div className="flex flex-col w-full px-1 gap-1">
         {/* Item title, truncates if too long. */}
         <p
-          className="text-sm text-zinc-600 truncate hover:text-sky-400 duration-200 ease-in"
+          className="text-sm text-zinc-600 truncate duration-200 ease-in"
           title={item.title} // Show full title on hover.
         >
           {item.title}
@@ -124,7 +124,7 @@ export default function MediaItemCard({
                 event.stopPropagation(); // Prevent card click.
                 onToggleFavorite(item._id, !item.favorite); // Toggle favorite status.
               }}
-              className="ml-1.5 text-zinc-500 hover:text-sky-400 ease-in-out duration-200"
+              className="ml-1.5 text-zinc-400 hover:text-sky-400 ease-in-out duration-200"
               aria-label={`Toggle ${item.title} as favorite`}
             >
               <Heart
@@ -139,7 +139,7 @@ export default function MediaItemCard({
 
           {/* Display formatted date if available. */}
           {formattedDisplayDate && (
-            <div className="text-xs text-zinc-400">{formattedDisplayDate}</div>
+            <div className="text-xs text-zinc-600">{formattedDisplayDate}</div>
           )}
         </div>
       </div>
